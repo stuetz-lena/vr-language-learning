@@ -22,15 +22,6 @@ public class Draggable : GrabbableBase<PointerEventData, Draggable.Grabber>
     [Serializable]
     public class UnityEventDraggable : UnityEvent<Draggable> { }
 
-    private Vector3 screenPoint;
-    private Vector3 offset;
-    private Collider thisObject;
-    private int points = 0;
-
-    public float movementSpeed = 2;
-    public float topBound = 30;
-    public float bottomBound = -20;
-
     public class Grabber : GrabberBase<PointerEventData>
     {
         private static GrabberPool m_pool;
@@ -155,11 +146,6 @@ public class Draggable : GrabbableBase<PointerEventData, Draggable.Grabber>
         onGrabberDrop += () => m_onDrop.Invoke(this);
     }
 
-    void Start() {
-        thisObject = gameObject.GetComponent<Collider>();
-        
-    }
-
     protected virtual void OnDisable() { ForceRelease(); }
 
     protected override Grabber CreateGrabber(PointerEventData eventData)
@@ -257,21 +243,5 @@ public class Draggable : GrabbableBase<PointerEventData, Draggable.Grabber>
     public virtual void OnEndDrag(PointerEventData eventData)
     {
         RemoveGrabber(eventData);
-    }
-
-     private void OnTriggerEnter(Collider other)
-    {
-        if ((other.CompareTag("Bucket_der") && thisObject.CompareTag("Der")) || (other.CompareTag("Bucket_die") && thisObject.CompareTag("Die")) || (other.CompareTag("Bucket_das") && thisObject.CompareTag("Das")))
-        {
-            //Fehler bei der Punktezaehlung. Bleibt immer bei 1 haengen
-            points++;
-            Debug.Log("Richtig! Sie haben " + points + " Punkte.");
-            gameObject.SetActive(false);
-        }
-
-        if ((other.CompareTag("Bucket_der") && thisObject.CompareTag("Die")) || (other.CompareTag("Bucket_der") && thisObject.CompareTag("Das")) || (other.CompareTag("Bucket_die") && thisObject.CompareTag("Der")) || (other.CompareTag("Bucket_die") && thisObject.CompareTag("Das")) || (other.CompareTag("Bucket_das") && thisObject.CompareTag("Der")) || (other.CompareTag("Bucket_das") && thisObject.CompareTag("Die")))
-        {
-            Debug.Log("Leider falsch");
-        }
     }
 }

@@ -22,7 +22,7 @@ public class bluble : MonoBehaviour
     {
         t += 0.02f;
         y = Mathf.Sin(t)*0.25f + initialY;
-        transform.position =  new Vector3(initialX, y,  -1 * Time.deltaTime + transform.position.z);
+        transform.position =  new Vector3(isnitialX, y,  -1 * Time.deltaTime + transform.position.z);
 
         /*if (Keyboard.current[x].wasPressedThisFrame)
         {
