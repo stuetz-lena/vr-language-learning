@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Bullet
   - bluble
+  - der
+  - die
+  - das
+  - Bucket_der
+  - Bucket_die
+  - Bucket_das
   layers:
   - Default
   - TransparentFX
