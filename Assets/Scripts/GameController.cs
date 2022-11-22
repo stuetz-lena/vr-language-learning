@@ -197,6 +197,7 @@ public class GameController : MonoBehaviourPunCallbacks
             playerNr = PhotonNetwork.LocalPlayer.ActorNumber;
             //Debug.Log("Player-Nr: " + playerNr);
     }*/
+    [PunRPC]
     private void CreateBluble() {
         //Randomize Order
         int index = UnityEngine.Random.Range(0, words.GetLength(0));
@@ -207,7 +208,8 @@ public class GameController : MonoBehaviourPunCallbacks
             float x = UnityEngine.Random.Range(-0.5f, 0.5f);
             float initalY = player.transform.position.y+UnityEngine.Random.Range(0.7f,1);
             Vector3 position = new Vector3(player.transform.position.x+x, initalY, player.transform.position.z+deviationZ);
-            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, player.transform.rotation, 4).GetComponent<BlubleDraggable>();
+            BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, player.transform.rotation, 4).GetComponent<BlubleDraggable>();
+            //Event mitteilen PhotonView.RPC > RaiseEvent
             currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[index,0];
             currentBluble.initialY = initalY; //make sure the random factor stays constant

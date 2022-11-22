@@ -7,6 +7,7 @@ using TMPro;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     static string GAME_VERSION = "Ver.1";
+    PhotonView photonView;
 
     static RoomOptions ROOM_OPTIONS = new RoomOptions()
     {
@@ -35,6 +36,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("PhotonLogin: Verbindung zum Server wird hergestellt...");
         PhotonNetwork.GameVersion = GAME_VERSION;
         PhotonNetwork.ConnectUsingSettings();
+        photonView = GetComponent<PhotonView>();
     }
 
     public override void OnConnectedToMaster()
@@ -56,18 +58,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         networkPlayer = PhotonNetwork.Instantiate(modelList[index], new Vector3(0, 0, 0), Quaternion.identity, 0);
         networkPlayer.transform.parent = transform;
         cameraRig.transform.parent = networkPlayer.transform;
+        /*if(photonView.IsMine){
+            networkPlayer.SetActive(false);
+        }*/
 
         //added to hand over player details
         gameController.player = networkPlayer;
         gameController.playerNr = PhotonNetwork.LocalPlayer.ActorNumber;
        
         //create buckets and score per player, problem with positioning
-        /*GameObject bucketDer = PhotonNetwork.Instantiate("Bucket_der",  new Vector3(cameraRig.transform.position.x-0.5f, 0.3f, -13.6f), Quaternion.identity, 1);
+        GameObject bucketDer = PhotonNetwork.Instantiate("Bucket_der",  new Vector3(cameraRig.transform.position.x-0.5f, 0.3f, -13.6f), Quaternion.identity, 1);
         bucketDer.transform.parent = transform;
         GameObject bucketDie = PhotonNetwork.Instantiate("Bucket_die", new Vector3(this.transform.position.x, 0.3f, -13.6f), Quaternion.identity, 1);
         bucketDie.transform.parent = transform;
         GameObject bucketDas = PhotonNetwork.Instantiate("Bucket_das", new Vector3(this.transform.position.x, 0.3f, -13.6f), Quaternion.identity, 1);
         bucketDas.transform.parent = transform;
-        scoreText = PhotonNetwork.Instantiate("Score", new Vector3(0, 0, 0), Quaternion.identity, 0).GetComponent<TextMeshPro>();*/
+        scoreText = PhotonNetwork.Instantiate("Score", new Vector3(0, 0, 0), Quaternion.identity, 0).GetComponent<TextMeshPro>();
     }
 }

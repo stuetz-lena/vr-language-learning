@@ -14,7 +14,7 @@ using GrabberPool = HTC.UnityPlugin.Utility.ObjectPool<BlubleDraggable.Grabber>;
 using TMPro;
 
 // demonstrate of dragging things useing built in EventSystem handlers
-public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.Grabber>
+public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.Grabber> //NetworkObject
     , IInitializePotentialDragHandler
     , IBeginDragHandler
     , IDragHandler
