@@ -207,7 +207,8 @@ public class GameController : MonoBehaviourPunCallbacks
             float x = UnityEngine.Random.Range(-0.5f, 0.5f);
             float initalY = player.transform.position.y+UnityEngine.Random.Range(0.7f,1);
             Vector3 position = new Vector3(player.transform.position.x+x, initalY, player.transform.position.z+deviationZ);
-            BlubleDraggable currentBluble = Instantiate(bluble, position, player.transform.rotation, this.transform);
+            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, player.transform.rotation, 4).GetComponent<BlubleDraggable>();
+            currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[index,0];
             currentBluble.initialY = initalY; //make sure the random factor stays constant
             currentBluble.deviationX = x;

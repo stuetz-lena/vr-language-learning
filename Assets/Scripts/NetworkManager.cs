@@ -17,8 +17,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [SerializeField]
     GameObject networkPlayer;
-    //[SerializeField]
-    //TextMeshPro scoreText;
+    [SerializeField]
+    TextMeshPro scoreText;
 
     //added to provide player
     public GameController gameController;
@@ -68,6 +68,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         bucketDie.transform.parent = transform;
         GameObject bucketDas = PhotonNetwork.Instantiate("Bucket_das", new Vector3(this.transform.position.x, 0.3f, -13.6f), Quaternion.identity, 1);
         bucketDas.transform.parent = transform;
-        scoreText = PhotonNetwork.Instantiate("Score", new Vector3(0, 0, 0), Quaternion.identity, 0);*/
+        scoreText = PhotonNetwork.Instantiate("Score", new Vector3(0, 0, 0), Quaternion.identity, 0).GetComponent<TextMeshPro>();*/
     }
 }
