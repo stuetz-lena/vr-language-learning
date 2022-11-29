@@ -3,19 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-<<<<<<< Updated upstream
-  tags: []
-=======
   tags:
   - Bullet
   - bluble
-  - Der
-  - Die
-  - Das
+  - der
+  - die
+  - das
   - Bucket_der
   - Bucket_die
   - Bucket_das
->>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
