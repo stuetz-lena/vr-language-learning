@@ -1,0 +1,28 @@
+//========= Copyright 2016-2022, HTC Corporation. All rights reserved. ===========
+
+using UnityEngine;
+
+namespace HTC.UnityPlugin.Vive
+{
+
+    //added due to Instruction for Photon, copy of Ball.cs; Test necessity
+    public class Bluble : MonoBehaviour
+    {
+#pragma warning disable 0649
+
+        [SerializeField] private float Lifetime = 10.0f;
+
+#pragma warning restore 0649
+
+        public void OnGrabbed()
+        {
+            Detach();
+        }
+
+        private void Detach()
+        {
+            transform.parent = null;
+            Destroy(gameObject, Lifetime);
+        }
+    }
+}
