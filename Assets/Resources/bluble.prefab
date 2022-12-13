@@ -309,9 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posOffset: {x: 0, y: 0, z: 0}
   rotOffset: {x: 0, y: 0, z: 0}
-  gameController: {fileID: 0}
-  deviationX: 0
-  initialY: 0
+  gameController: {fileID: 151119160180665309, guid: b79d333885eb74b55a3fea9ff1ca149f, type: 3}
   timeFactor: -1
   fail: {fileID: 3477469394664784070}
   success: {fileID: 136782013604406402}

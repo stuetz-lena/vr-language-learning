@@ -5,7 +5,6 @@ using Photon.Realtime;
 
 public class PhotonStatus : MonoBehaviour
 {
-
 	void OnGUI()
 	{
 		string status = "Photon: " + PhotonNetwork.NetworkClientState.ToString() + "\n";
@@ -17,8 +16,9 @@ public class PhotonStatus : MonoBehaviour
 			status += "Teilnehmer-Anzahl: " + PhotonNetwork.CurrentRoom.PlayerCount + "\n";
 			status += "-------------------------------------------------------\n";
 			status += "Player Nr.: " + PhotonNetwork.LocalPlayer.ActorNumber + "\n";
-			status += "IsMasterClient: " + PhotonNetwork.IsMasterClient;
+			status += "IsMasterClient: " + PhotonNetwork.IsMasterClient + "\n";
+			status += "Score: " + GetComponent<NetworkManager>().GetScore().ToString("D2");
 		}
-		GUI.TextField(new Rect(10, 10, 220, 120), status);
+		GUI.TextField(new Rect(10, 10, 220, 125), status);
 	}
 }

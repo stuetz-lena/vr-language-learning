@@ -12,6 +12,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using GrabberPool = HTC.UnityPlugin.Utility.ObjectPool<BlubleDraggable.Grabber>;
 using TMPro;
+using Photon.Pun;
+using Photon.Realtime;
 
 // demonstrate of dragging things useing built in EventSystem handlers
 public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.Grabber> //NetworkObject
@@ -24,9 +26,9 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
    //set by controller
     public GameController gameController; //to access score methods
     [HideInInspector]
-    public float deviationX = 0; 
+    private float deviationX = 0; 
     [HideInInspector]
-    public float initialY = 0;
+    private float initialY = 0;
 
     //public
     public float timeFactor = -1;
@@ -43,6 +45,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     private float time = 0;
     private Collider myCollider;   
     private Renderer myRenderer;
+    private PhotonView photonView;
 
     // Start is called before the first frame update
     void Start()
@@ -60,25 +63,38 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             //moveForwards
             time += 0.02f;
             float y = Mathf.Sin(time)*0.25f + initialY;
-            transform.position = new Vector3(gameController.GetPlayerX() + deviationX, y,  timeFactor * Time.deltaTime + transform.position.z); //position according to player
-            }
+            //gameController.GetPlayerX() + deviationX //position according to player
+            transform.position = new Vector3(deviationX + gameController.getXRigX(), y,  timeFactor * Time.deltaTime + transform.position.z); 
         }
+        Quaternion camera = gameController.GetRotation(); //trying to rotate text to cam
+        GetComponentInChildren<TextMeshPro>().transform.rotation =  camera;
+    }
 
     public void SetGameController(GameController gameControl){
         gameController = gameControl;
+    }
+    public void SetDeviationX(float deviation){
+        deviationX = deviation;
+    }
+    public void SetInitialY(float initial){
+        initialY = initial;
     }
 
     private void OnCollisionEnter(Collision other){
         if(!isHit){ //bluble needs to stay to play sound, we could also transfer the sound to the controller to avoid, depending on animation length
             if ((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){
+                Debug.Log("Richtig!");
+                //photonView = this.GetComponent<PhotonView>();
+                //StartCoroutine(photonView.RPC("Successful", RpcTarget.All, photonView.ViewID)); 
                 isHit = true;
                 if(success) {
                     success.Play();
                 }
                 myRenderer.material = green;
-                Debug.Log("Richtig!");
-                gameController.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text);
-                Destroy(this.gameObject, success.clip.length); //wait until sound is played
+                photonView = gameController.GetComponent<PhotonView>();
+                photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
+                //gameController.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text);
+                Destroy(this.gameObject,success.clip.length); //wait until sound is played  
             }
 
             if ((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("die"))){
@@ -90,10 +106,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 Debug.Log("Leider falsch");
                 gameController.Fail(this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag); //save wrong answer
                 Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
-            }
+            } //PhotonNetwork.Destroy needed
         
             //if(other.GetComponent<Collider>().tag == "Player") {
-            if(other.collider.tag == "Player") { //destroy blubles if the hit the player
+            if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if the hit the player
                 isHit = true;
                 if(pop)
                     pop.Play();
@@ -101,6 +117,26 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 Destroy(this.gameObject, pop.clip.length);
             }
         }
+    }
+    [PunRPC]
+    IEnumerator Successful(int viewID){
+        Debug.Log("Method executed");
+        Debug.Log(this.GetType());
+        this.isHit = true;
+        if(success) {
+            success.Play();
+        }
+        this.myRenderer.material = green;
+        photonView = gameController.GetComponent<PhotonView>();
+        photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
+        //gameController.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text);
+        yield return new WaitForSeconds(success.clip.length);
+        PhotonNetwork.Destroy(this.gameObject); //wait until sound is played
+    }
+
+    [PunRPC]
+    void Fail(){
+        
     }
 
     //---- addedCodeEnd ------
