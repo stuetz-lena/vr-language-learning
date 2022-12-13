@@ -61,11 +61,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         CreateAvatar();
         if(PhotonNetwork.IsMasterClient){
-            CreateGameController();
+            //CreateGameController();
             //PhotonView photonView = GetComponent<PhotonView>();
             //photonView.RPC("CreateBuckets", RpcTarget.All);
             CreateBuckets();
-            //startButtonCanvas.SetActive(true);
+            startButtonCanvas.transform.position =  new Vector3(XRRigPosition.transform.position.x,startButtonCanvas.transform.position.y,startButtonCanvas.transform.position.z);
+            startButtonCanvas.SetActive(true);
         }       
     }
 
@@ -99,18 +100,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) {
             gameController.FirstBluble(); //create first bluble
         }
-        //startButtonCanvas.SetActive(false);
+        startButtonCanvas.SetActive(false);
     }
 
     void CreateBuckets(){
         //create buckets and score per player
-        GameObject bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(1.7f, 0.3f, -13.4f), Quaternion.identity, 0);
+        GameObject bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(1.4f, 0.3f, -13f), Quaternion.identity, 0);
         bucketDer.transform.parent = transform;
         bucketDer.tag = "Bucket_der";
-        GameObject bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(2.2f, 0.3f, -13f), Quaternion.identity, 0);
+        GameObject bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(2.3f, 0.3f, -12.3f), Quaternion.identity, 0);
         bucketDie.transform.parent = transform;
         bucketDie.tag = "Bucket_die";
-        GameObject bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das", new Vector3(2.6f, 0.3f, -13.4f), Quaternion.identity, 0);
+        GameObject bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das", new Vector3(2.94f, 0.3f, -12.95f), Quaternion.identity, 0);
         bucketDas.transform.parent = transform;
         bucketDas.tag = "Bucket_das";
         gameController.SetBucketDer(bucketDer);
