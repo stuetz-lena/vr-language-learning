@@ -53,7 +53,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Verbunden zum Server.");
-        PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
+        PhotonNetwork.JoinOrCreateRoom("bluble1", ROOM_OPTIONS, null);
         //PhotonNetwork.LoadLevel("MultiUserVR");
     }
 
@@ -61,11 +61,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         CreateAvatar();
         if(PhotonNetwork.IsMasterClient){
-            //CreateGameController();
+            CreateGameController();
             //PhotonView photonView = GetComponent<PhotonView>();
             //photonView.RPC("CreateBuckets", RpcTarget.All);
             CreateBuckets();
-            startButtonCanvas.SetActive(true);
+            //startButtonCanvas.SetActive(true);
         }       
     }
 
@@ -99,7 +99,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) {
             gameController.FirstBluble(); //create first bluble
         }
-        startButtonCanvas.SetActive(false);
+        //startButtonCanvas.SetActive(false);
     }
 
     void CreateBuckets(){
