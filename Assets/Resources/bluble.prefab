@@ -322,7 +322,7 @@ MonoBehaviour:
   m_followingDuration: 0.04
   m_overrideMaxAngularVelocity: 1
   m_unblockableGrab: 1
-  m_scrollingSpeed: 0.01
+  m_scrollingSpeed: 0.03
   m_minStretchScale: 1
   m_maxStretchScale: 1
   m_afterGrabbed:

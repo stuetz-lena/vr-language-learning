@@ -79,7 +79,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         cameraRig.transform.parent = networkPlayer.transform;
         //XRRigPosition.transform.position = new Vector3(Random.Range(-6, 6), 0.25f,-14.5f);
         XRRigPosition.transform.position = new Vector3(0 + PhotonNetwork.LocalPlayer.ActorNumber * 2, 0.25f,-14.5f);
-        gameController.SetTransform(XRRigPosition); //added to hand over positioning details XRRigPosition
+        //gameController.SetTransform(XRRigPosition); //added to hand over positioning details XRRigPosition
 
         //Hide own player
         PhotonView photonView = networkPlayer.GetComponent<PhotonView>();
