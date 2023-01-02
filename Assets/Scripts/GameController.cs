@@ -10,17 +10,13 @@ using TMPro;
 public class GameController : MonoBehaviourPunCallbacks
 {
     //public
-    public TextMeshPro scoreText; 
+    //public TextMeshPro scoreText; 
     public BlubleDraggable bluble;
-    public GameObject player;
+    //public GameObject player;
     [HideInInspector]
-    public int playerNr = 0;
     public int variant = 1;
     public int deviationZ = 20;
     public int blublesPerRow = 5;
-    public GameObject bucket_der;
-    public GameObject bucket_die;
-    public GameObject bucket_das;
     public AudioSource final;
     
     //private
@@ -28,7 +24,11 @@ public class GameController : MonoBehaviourPunCallbacks
     private object[,] words;
     private int blubleCounter = 0;
     private int destroyedBlubles = 0;
-    private int numberOfBlubleCoroutines = 0;
+    private Coroutine blubleRoutine;
+    private GameObject bucket_der;
+    private GameObject bucket_die;
+    private GameObject bucket_das;
+    public Transform XRig; 
     
     // Start is called before the first frame update
     void Start()
@@ -87,12 +87,83 @@ public class GameController : MonoBehaviourPunCallbacks
             };
             break;
         }
-        //Set PlayerNr > now in NetworkManager
-        //StartCoroutine(GetPlayerNr(2));
     }
 
     // Update is called once per frame
     void Update(){ }
+
+    /*private void UpdateScore(){
+        scoreText.text = score.ToString("D3");
+    }*/
+
+    public Quaternion GetRotation() {
+        return XRig.rotation;
+    }
+    
+    public float getXRigX() {
+        return XRig.position.x;
+    }
+
+    public int GetScore() {
+        return score;
+    }
+
+    public void SetBucketDer(GameObject bucket) {
+       bucket_der = bucket;
+    }
+
+    public void SetBucketDie(GameObject bucket) {
+       bucket_die = bucket;
+    }
+
+    public void SetBucketDas(GameObject bucket) {
+       bucket_das = bucket;
+    }
+
+    public void SetTransform(Transform rig) {
+       XRig = rig;
+    }
+
+    public void FirstBluble(){
+        blubleRoutine = StartCoroutine(BlubleCreator(0));
+    }
+
+    public IEnumerator BlubleCreator(int time){
+        yield return new WaitForSeconds(time);
+        //PhotonView photonView = this.GetComponent<PhotonView>();
+        //photonView.RPC("CreateBluble", RpcTarget.All);
+        CreateBluble();
+    }
+
+    [PunRPC]
+    private void CreateBluble() {
+        //Randomize Order
+        int index = UnityEngine.Random.Range(0, words.GetLength(0));
+        if(words[index,2] == null) {
+            blubleCounter++;
+            words[index,2] = false;
+            //Create new bluble
+            float x = UnityEngine.Random.Range(-0.5f, 0.5f);
+            float initalY = XRig.transform.position.y+UnityEngine.Random.Range(0.7f,1);
+            Vector3 position = new Vector3(XRig.transform.position.x+x, initalY, XRig.transform.position.z+deviationZ);
+            BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, XRig.transform.rotation, 0).GetComponent<BlubleDraggable>();
+            //Event mitteilen PhotonView.RPC > RaiseEvent
+            currentBluble.transform.parent = this.transform;
+            currentBluble.gameObject.name = "Bluble " + (string)words[index,0];
+            currentBluble.SetInitialY(initalY); //make sure the random factor stays constant
+            currentBluble.SetDeviationX(x);
+            currentBluble.emergingBluble.Play();
+            currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0];
+            currentBluble.SetGameController(this);
+            currentBluble.tag = (string)words[index,1];
+            //Debug.Log(words[index,0] + ", " + words[index,1]);
+            //Initiate next bluble
+            blubleRoutine = StartCoroutine(BlubleCreator(5));
+        } else if(blubleCounter < words.GetLength(0)) { //if bluble already created start again, until all are finished
+            CreateBluble();
+            //photonView.RPC("CreateBluble", RpcTarget.All);
+        }
+    } 
 
     public void Fail(string word = "false", string bucket = "false"){
         //if wrong sorting, save in array
@@ -116,17 +187,21 @@ public class GameController : MonoBehaviourPunCallbacks
     public void CheckForTie(){
         if(destroyedBlubles ==  words.GetLength(0)){
             Debug.Log("End");
-            ShowResults();
+            PhotonView photonView = this.GetComponent<PhotonView>();
+            photonView.RPC("ShowResults", RpcTarget.All);
+            //ShowResults();
         } else if(blubleCounter == destroyedBlubles){
-            StartCoroutine(BlubleCreator(0));
+            StopCoroutine(blubleRoutine); //have only one Coroutine at a time
+            blubleRoutine = StartCoroutine(BlubleCreator(0));
         }
     }
 
     //Increase score and write to array
+    [PunRPC]
     public void Congrats(int points, string word){
         score += points;
         destroyedBlubles++;
-        UpdateScore();
+        //UpdateScore();
         for(int i = 0; i < words.GetLength(0); i++) {
             if(String.Equals(words[i,0],word)){
                 words[i,2] = true;
@@ -136,6 +211,7 @@ public class GameController : MonoBehaviourPunCallbacks
         CheckForTie();
     }
 
+    [PunRPC]
     public void ShowResults(){
         //Hide buckets & play sound
         if(final)
@@ -145,7 +221,7 @@ public class GameController : MonoBehaviourPunCallbacks
         bucket_das.SetActive(false);
 
         //Reposition Counter
-        scoreText.transform.position = new Vector3(player.transform.position.x-0.49f, scoreText.transform.position.y-0.07f, scoreText.transform.position.z);
+        //scoreText.transform.position = new Vector3(player.transform.position.x-0.49f, scoreText.transform.position.y-0.07f, scoreText.transform.position.z);
 
         //Show Blubles again
         float xSteps = 6/blublesPerRow;
@@ -164,8 +240,9 @@ public class GameController : MonoBehaviourPunCallbacks
             }
             x = x + xSteps;
             rowCounter++;
-            Vector3 position = new Vector3(player.transform.position.x+(x-xSteps/2), player.transform.position.y + (y+ySteps/2), player.transform.position.z+5.5f);
-            BlubleDraggable currentBluble = Instantiate(bluble, position, player.transform.rotation, this.transform);
+            Vector3 position = new Vector3(XRig.position.x+(x-xSteps/2), XRig.position.y + (y+ySteps/2), XRig.position.z+5.5f);
+            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, XRig.rotation, 0).GetComponent<BlubleDraggable>();
+            currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[i,1] + " " + (string)words[i,0];
             currentBluble.isHit = true;
@@ -177,55 +254,4 @@ public class GameController : MonoBehaviourPunCallbacks
             }   
         }
     }
-
-    private void UpdateScore(){
-        scoreText.text = score.ToString("D3");
-    }
-
-    public float GetPlayerX() {
-        return player.transform.position.x;
-    }
-
-    public IEnumerator BlubleCreator(int time){
-        numberOfBlubleCoroutines++; //trying to have only one Coroutine at a time
-        yield return new WaitForSeconds(time);
-        CreateBluble();
-    }
-    /*IEnumerator GetPlayerNr(int time){
-        yield return new WaitForSeconds(time);
-        if (PhotonNetwork.InRoom)
-            playerNr = PhotonNetwork.LocalPlayer.ActorNumber;
-            //Debug.Log("Player-Nr: " + playerNr);
-    }*/
-    [PunRPC]
-    private void CreateBluble() {
-        //Randomize Order
-        int index = UnityEngine.Random.Range(0, words.GetLength(0));
-        if(words[index,2] == null) {
-            blubleCounter++;
-            words[index,2] = false;
-            //Create new bluble
-            float x = UnityEngine.Random.Range(-0.5f, 0.5f);
-            float initalY = player.transform.position.y+UnityEngine.Random.Range(0.7f,1);
-            Vector3 position = new Vector3(player.transform.position.x+x, initalY, player.transform.position.z+deviationZ);
-            BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, player.transform.rotation, 4).GetComponent<BlubleDraggable>();
-            //Event mitteilen PhotonView.RPC > RaiseEvent
-            currentBluble.transform.parent = this.transform;
-            currentBluble.gameObject.name = "Bluble " + (string)words[index,0];
-            currentBluble.initialY = initalY; //make sure the random factor stays constant
-            currentBluble.deviationX = x;
-            currentBluble.emergingBluble.Play();
-            currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0];
-            currentBluble.SetGameController(this);
-            currentBluble.tag = (string)words[index,1];
-            //Debug.Log(words[index,0] + ", " + words[index,1]);
-            //Initiate next bluble
-            numberOfBlubleCoroutines--;
-            if(numberOfBlubleCoroutines == 0){ //trying to avoid two parallel coroutines
-                StartCoroutine(BlubleCreator(5));
-            }
-        } else if(blubleCounter < words.GetLength(0)) { //if bluble already created start again, until all are finished
-            CreateBluble();
-        }
-    } 
 }

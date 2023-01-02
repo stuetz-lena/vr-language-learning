@@ -1,34 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
+//========= Copyright 2016-2022, HTC Corporation. All rights reserved. ===========
+
 using UnityEngine;
 
-//Code from fist attempt
-public class bluble : MonoBehaviour
+namespace HTC.UnityPlugin.Vive
 {
-    private float t;
-    private float y;
-    private float initialY;
-    private float initialX;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        t = 0;
-        initialY = transform.position.y;
-        initialX = transform.position.x;
-    }
 
-    // Update is called once per frame
-    void Update()
+    //added due to Instruction for Photon, copy of Ball.cs; Test necessity
+    public class Bluble : MonoBehaviour
     {
-        t += 0.02f;
-        y = Mathf.Sin(t)*0.25f + initialY;
-        transform.position =  new Vector3(initialX, y,  -1 * Time.deltaTime + transform.position.z);
-    }
+#pragma warning disable 0649
 
-    private void OnCollisionEnter(Collision other) {
-        if(other.collider.tag == "Player") {
-            Destroy(this.gameObject);
+        [SerializeField] private float Lifetime = 10.0f;
+
+#pragma warning restore 0649
+
+        public void OnGrabbed()
+        {
+            Detach();
+        }
+
+        private void Detach()
+        {
+            transform.parent = null;
+            Destroy(gameObject, Lifetime);
         }
     }
 }

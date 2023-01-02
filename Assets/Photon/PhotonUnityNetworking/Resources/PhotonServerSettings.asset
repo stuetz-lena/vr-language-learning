@@ -19,7 +19,7 @@ MonoBehaviour:
     AppIdVoice: ae6852ee-4f09-48a8-8084-da49ef3328ce
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: eu
     Server: 
     Port: 0
     ProxyServer: 
@@ -43,6 +43,16 @@ MonoBehaviour:
   - ChangeColour
   - HeresWhy
   - CreateBluble
+  - Congrats
+  - OnCollisionEnter
+  - ShowResults
+  - CreateBuckets
+  - FirstBluble
+  - CollisionHandler
+  - Fail
+  - Success
+  - Successful
+  - CreateGameController
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

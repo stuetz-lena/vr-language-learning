@@ -12,6 +12,7 @@ TagManager:
   - Bucket_der
   - Bucket_die
   - Bucket_das
+  - Floor_end
   layers:
   - Default
   - TransparentFX
