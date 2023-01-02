@@ -156,6 +156,11 @@ public class GameController : MonoBehaviourPunCallbacks
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0];
             currentBluble.SetGameController(this);
             currentBluble.tag = (string)words[index,1];
+            GameObject go = currentBluble.transform.gameObject;
+            AudioSource audio = go.AddComponent<AudioSource>() as AudioSource;
+            audio.clip = Resources.Load("Audio/" + (string)words[index,0]) as AudioClip;
+            audio.playOnAwake = false;
+            audio.priority = 0;
             //Debug.Log(words[index,0] + ", " + words[index,1]);
             //Initiate next bluble
             blubleRoutine = StartCoroutine(BlubleCreator(5));
@@ -167,7 +172,7 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void Fail(string word = "false", string bucket = "false"){
         //if wrong sorting, save in array
-        if(!String.Equals(word, "false")){
+        if(!String.Equals(word, "false") && !String.Equals(bucket, "false")){
             destroyedBlubles++;
             for(int i = 0; i < words.GetLength(0); i++) {
                 if(String.Equals(words[i,0],word)){
@@ -178,7 +183,14 @@ public class GameController : MonoBehaviourPunCallbacks
             CheckForTie();
         } else {
             //otherwise just increase counter
-            destroyedBlubles++;
+            //destroyedBlubles++;
+            blubleCounter--;
+            for(int i = 0; i < words.GetLength(0); i++) {
+                if(String.Equals(words[i,0],word)){
+                    words[i,2] = null;
+                    break;
+                }
+            }
             CheckForTie();
         }
     }
@@ -246,6 +258,9 @@ public class GameController : MonoBehaviourPunCallbacks
             currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[i,1] + " " + (string)words[i,0];
             currentBluble.isHit = true;
+            Rigidbody rb = currentBluble.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            currentBluble.GetComponent<BlubleDraggable>().enabled = false;
             //Debug.Log(words[i,2].ToString());
             if(String.Equals(words[i,2].ToString(), "True")){
                 currentBluble.GetComponent<Renderer>().material = currentBluble.green;

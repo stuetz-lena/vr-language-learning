@@ -31,6 +31,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [SerializeField]
     Transform cameraRig;
 
+    private GameObject bucketDer;
+    private GameObject bucketDie;
+    private GameObject bucketDas;
+
     List<string> modelList = new List<string>() {
             "audioboy", "bighead", "unitychan"
         };
@@ -53,7 +57,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Verbunden zum Server.");
-        PhotonNetwork.JoinOrCreateRoom("bluble1", ROOM_OPTIONS, null);
+        PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
         //PhotonNetwork.LoadLevel("MultiUserVR");
     }
 
@@ -100,19 +104,35 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if(PhotonNetwork.IsMasterClient) {
             gameController.FirstBluble(); //create first bluble
         }
+        Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        rb = bucketDie.GetComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        rb = bucketDas.GetComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        bucketDer.GetComponent<Draggable>().enabled = false;
+        bucketDie.GetComponent<Draggable>().enabled = false;
+        bucketDas.GetComponent<Draggable>().enabled = false;
         startButtonCanvas.SetActive(false);
     }
 
     void CreateBuckets(){
         //create buckets and score per player
-        GameObject bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(1.4f, 0.3f, -13f), Quaternion.identity, 0);
+        bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(1.4f, 0.3f, -13f), Quaternion.identity, 0);
         bucketDer.transform.parent = transform;
+        Canvas can = bucketDer.GetComponentInChildren<Canvas>();
+        can.worldCamera = Camera.main;
         bucketDer.tag = "Bucket_der";
-        GameObject bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(2.3f, 0.3f, -12.3f), Quaternion.identity, 0);
+        bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(2.3f, 0.3f, -12.3f), Quaternion.identity, 0);
         bucketDie.transform.parent = transform;
+        can = bucketDie
+        .GetComponentInChildren<Canvas>();
+        can.worldCamera = Camera.main;
         bucketDie.tag = "Bucket_die";
-        GameObject bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das", new Vector3(2.94f, 0.3f, -12.95f), Quaternion.identity, 0);
+        bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das", new Vector3(2.94f, 0.3f, -12.95f), Quaternion.identity, 0);
         bucketDas.transform.parent = transform;
+        can = bucketDas.GetComponentInChildren<Canvas>();
+        can.worldCamera = Camera.main;
         bucketDas.tag = "Bucket_das";
         gameController.SetBucketDer(bucketDer);
         gameController.SetBucketDie(bucketDie);

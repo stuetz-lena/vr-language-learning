@@ -46,6 +46,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     private Collider myCollider;   
     private Renderer myRenderer;
     private PhotonView photonView;
+    private AudioSource wordSource = null;
 
     // Start is called before the first frame update
     void Start()
@@ -87,10 +88,25 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 //photonView = this.GetComponent<PhotonView>();
                 //StartCoroutine(photonView.RPC("Successful", RpcTarget.All, photonView.ViewID)); 
                 isHit = true;
+                if(wordSource){
+                    wordSource.Stop();
+                }
+                if(pop)
+                    pop.Play();
                 if(success) {
                     success.Play();
                 }
                 myRenderer.material = green;
+                ParticleSystem ps = this.GetComponent<ParticleSystem>();
+                if(ps){
+                    //ParticleSystem.MainModule psMain = ps.main;
+                    //psMain.startColor = new ParticleSystem.MinMaxGradient(Color.green, Color.white);
+                    ParticleSystem.ColorOverLifetimeModule colorModule = ps.colorOverLifetime;
+                    colorModule.color = new ParticleSystem.MinMaxGradient(new Color(0.0f, 1.0f, 0.0f, 0.8f), new Color(0.43f, 0.01f, 0.47f, 0.5f));
+                    ps.Play(); 
+                    myRenderer.enabled = false;
+                    this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
+                }
                 photonView = gameController.GetComponent<PhotonView>();
                 photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
                 //gameController.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text);
@@ -99,10 +115,26 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
 
             if ((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("die"))){
                 isHit = true;
+                if(wordSource){
+                    wordSource.Stop();
+                }
+                if(pop)
+                    pop.Play();
                 if(fail) {
                     fail.Play();
                 }
                 myRenderer.material = red;
+                ParticleSystem ps = this.GetComponent<ParticleSystem>();
+                if(ps){
+                    //ParticleSystem.MainModule psMain = ps.main;
+                    //psMain.startColor = new ParticleSystem.MinMaxGradient(Color.red, Color.white);
+                    ParticleSystem.ColorOverLifetimeModule colorModule = ps.colorOverLifetime;
+                    colorModule.color = new ParticleSystem.MinMaxGradient(new Color(1.0f, 0.0f, 0.0f, 0.8f), new Color(0.43f, 0.01f, 0.47f, 0.5f));
+                    ps.Play(); 
+                    myRenderer.enabled = false;
+                    //yield return new WaitForSeconds(ps.main.duration);
+                    this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
+                }
                 Debug.Log("Leider falsch");
                 gameController.Fail(this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag); //save wrong answer
                 Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
@@ -111,9 +143,18 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             //if(other.GetComponent<Collider>().tag == "Player") {
             if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if the hit the player
                 isHit = true;
+                if(wordSource){
+                    wordSource.Stop();
+                }
                 if(pop)
                     pop.Play();
-                gameController.Fail(); //save destroyed bluble
+                ParticleSystem ps = this.GetComponent<ParticleSystem>();
+                if(ps){
+                    ps.Play(); 
+                }
+                myRenderer.enabled = false;
+                this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
+                gameController.Fail(this.GetComponentInChildren<TextMeshPro>().text); //save destroyed bluble
                 Destroy(this.gameObject, pop.clip.length);
             }
         }
@@ -137,6 +178,18 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     [PunRPC]
     void Fail(){
         
+    }
+
+    public void PlayAudioText(){
+        Component[] wordAudios = this.GetComponents(typeof(AudioSource));
+        for(int i = 0; i < wordAudios.Length; i++) {
+            AudioSource wordAudio = wordAudios[i] as AudioSource;
+            Debug.Log(wordAudio.clip.ToString() + " " + this.GetComponentInChildren<TextMeshPro>().text);
+            if(wordAudio.clip.ToString().Contains(this.GetComponentInChildren<TextMeshPro>().text)){
+                wordAudio.Play();
+                wordSource = wordAudio;
+            }
+        }
     }
 
     //---- addedCodeEnd ------
@@ -264,6 +317,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         base.Awake();
 
         afterGrabberGrabbed += () => m_afterGrabbed.Invoke(this);
+        //added Code
+        afterGrabberGrabbed += () => PlayAudioText();
         beforeGrabberReleased += () => m_beforeRelease.Invoke(this);
         onGrabberDrop += () => m_onDrop.Invoke(this);
     }
