@@ -6,11 +6,14 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 
+using UnityEngine.InputSystem;
+
 //responsible for Bluble spawn and score management
 public class GameController : MonoBehaviourPunCallbacks
 {
     //public
-    //public TextMeshPro scoreText; 
+    public TextMeshProUGUI scoreText; 
+    public TextMeshProUGUI timeText;
     public BlubleDraggable bluble;
     //public GameObject player;
     [HideInInspector]
@@ -18,9 +21,18 @@ public class GameController : MonoBehaviourPunCallbacks
     public int deviationZ = 20;
     public int blublesPerRow = 5;
     public AudioSource final;
+    public AudioSource gameSound;
+    public GameObject pauseButton;
+    public GameObject quitButton;
+    public GameObject ufo;
     
     //private
+    private TextMeshPro roboText;
+    private MeshRenderer roboRenderer;
     private int score = 0;
+    private float startTime = 0;
+    private float pauseTime = 0;
+    private float pauseStart;
     private object[,] words;
     private int blubleCounter = 0;
     private int destroyedBlubles = 0;
@@ -28,7 +40,10 @@ public class GameController : MonoBehaviourPunCallbacks
     private GameObject bucket_der;
     private GameObject bucket_die;
     private GameObject bucket_das;
+    private GameObject robo;
     public Transform XRig; 
+    [SerializeField]
+    private bool isPaused = false;
     
     // Start is called before the first frame update
     void Start()
@@ -90,18 +105,37 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     // Update is called once per frame
-    void Update(){ }
+    void Update(){ 
+        if(timeText != null && startTime != 0 && (destroyedBlubles <  words.GetLength(0)) && !isPaused){
+            //float t = Time.time - startTime;
+            TimeSpan t = TimeSpan.FromSeconds(Time.time - startTime - pauseTime);
+            //if(timeText.text != TimeSpan.FromSeconds(t).ToString("mm:ss"))
+                timeText.text = string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds); //.ToString("D3")
+        }
+        var gamepad = Gamepad.current;
+        if (gamepad != null){
+            if (gamepad.bButton.wasPressedThisFrame)
+            {
+                PauseGame();
+            }
+        }    
+    }
 
-    /*private void UpdateScore(){
-        scoreText.text = score.ToString("D3");
-    }*/
+    private void UpdateScore(){
+        scoreText.text = score.ToString("D2");
+        roboText.text = score.ToString("D2");
+    }
 
     public Quaternion GetRotation() {
         return XRig.rotation;
     }
     
-    public float getXRigX() {
+    public float GetXRigX() {
         return XRig.position.x;
+    }
+
+    public bool GetIsPaused(){
+        return isPaused;
     }
 
     public int GetScore() {
@@ -120,8 +154,42 @@ public class GameController : MonoBehaviourPunCallbacks
        bucket_das = bucket;
     }
 
+    public void SetRobo(TextMeshPro tmp, MeshRenderer robr, GameObject rob){
+        roboText = tmp;
+        roboRenderer = robr;
+        robo = rob;
+    }
+
     public void SetTransform(Transform rig) {
        XRig = rig;
+    }
+
+    public void SetStartTime(float t){
+        startTime = t;
+    }
+
+    public void MakeSound(){
+        gameSound.Play();
+    }
+
+    public void PauseGame(){
+        if(isPaused){
+            if(pauseStart != 0)
+                pauseTime += Time.time - pauseStart;
+            pauseStart = 0;
+            isPaused = false;
+            blubleRoutine = StartCoroutine(BlubleCreator(5));
+            ufo.GetComponent<UfoMovement>().enabled = true;
+            robo.GetComponent<RoboMovement>().enabled = true;
+            gameSound.Play();
+        } else {
+            isPaused = true;
+            pauseStart = Time.time;
+            StopCoroutine(blubleRoutine);
+            ufo.GetComponent<UfoMovement>().enabled = false;
+            robo.GetComponent<RoboMovement>().enabled = false;
+            gameSound.Stop();
+        }
     }
 
     public void FirstBluble(){
@@ -132,6 +200,11 @@ public class GameController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(time);
         //PhotonView photonView = this.GetComponent<PhotonView>();
         //photonView.RPC("CreateBluble", RpcTarget.All);
+        /*bool isPaused = this.GetIsPaused();
+        while(isPaused){
+            yield return new WaitForSeconds(time);
+            isPaused = this.GetIsPaused();
+        }*/
         CreateBluble();
     }
 
@@ -155,6 +228,7 @@ public class GameController : MonoBehaviourPunCallbacks
             currentBluble.emergingBluble.Play();
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0];
             currentBluble.SetGameController(this);
+            currentBluble.SetRoboBody(roboRenderer);
             currentBluble.tag = (string)words[index,1];
             GameObject go = currentBluble.transform.gameObject;
             AudioSource audio = go.AddComponent<AudioSource>() as AudioSource;
@@ -213,7 +287,7 @@ public class GameController : MonoBehaviourPunCallbacks
     public void Congrats(int points, string word){
         score += points;
         destroyedBlubles++;
-        //UpdateScore();
+        UpdateScore();
         for(int i = 0; i < words.GetLength(0); i++) {
             if(String.Equals(words[i,0],word)){
                 words[i,2] = true;
@@ -231,7 +305,10 @@ public class GameController : MonoBehaviourPunCallbacks
         bucket_der.SetActive(false);
         bucket_die.SetActive(false);
         bucket_das.SetActive(false);
-
+        pauseButton.SetActive(false);
+        quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
+        quitButton.SetActive(true);
+       
         //Reposition Counter
         //scoreText.transform.position = new Vector3(player.transform.position.x-0.49f, scoreText.transform.position.y-0.07f, scoreText.transform.position.z);
 
@@ -252,7 +329,7 @@ public class GameController : MonoBehaviourPunCallbacks
             }
             x = x + xSteps;
             rowCounter++;
-            Vector3 position = new Vector3(XRig.position.x+(x-xSteps/2), XRig.position.y + (y+ySteps/2), XRig.position.z+5.5f);
+            Vector3 position = new Vector3(XRig.position.x+(x-xSteps/2), XRig.position.y + (y+ySteps/2), XRig.position.z+6.5f);
             BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, XRig.rotation, 0).GetComponent<BlubleDraggable>();
             currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
@@ -267,6 +344,80 @@ public class GameController : MonoBehaviourPunCallbacks
             } else if (!String.Equals(words[i,2].ToString(), "False")) {
                 currentBluble.GetComponent<Renderer>().material = currentBluble.red;
             }   
+        }
+    }
+
+    public void QuitGame(){
+        //Stop bluble generation & sound
+        StopCoroutine(blubleRoutine);
+        gameSound.Stop();  
+
+        //Remove all blubles
+        if(PhotonNetwork.IsMasterClient){
+            foreach (Transform child in transform)
+            {
+                PhotonNetwork.Destroy(child.gameObject);
+            }
+        }
+
+        //Reset values
+        score = 0;
+        UpdateScore();
+        startTime = 0.0f;
+        pauseTime = 0.0f;
+        pauseStart = 0;
+        blubleCounter = 0;
+        destroyedBlubles = 0;
+        isPaused = false;
+        switch(variant) {
+            case 1: words = new object[13,3] {
+                {"Internet","das",null},
+                {"Post","die",null},
+                {"Computer","der",null},
+                {"Film","der",null},
+                {"Banane","die",null},
+                {"Entschuldigung","die",null},
+                {"Comic","der",null},
+                {"Person","die",null},
+                {"Name","der",null},
+                {"Beispiel","das",null},
+                {"Familienname","der",null},
+                {"Teil","das",null},
+                {"Handy","das",null}
+            };
+            break;
+            case 2: words = new object[13,3] {
+                {"Antwort","die",null},
+                {"Familie","die",null},
+                {"Musik","die",null},
+                {"Quiz","das",null},
+                {"Punkt","der",null},
+                {"Schauspieler","der",null},
+                {"Sprache","die",null},
+                {"Ausland","das",null},
+                {"Sache","die",null},
+                {"E-Mail","die",null},
+                {"Tag","der",null},
+                {"Fernseher","der",null},
+                {"Problem","das",null}
+            };
+            break; 
+            case 3: words = new object[13,3] {
+                {"Blume","die",null},
+                {"Fahrrad","das",null},
+                {"Hose","die",null},
+                {"Klavier","das",null},
+                {"Kühlschrank","der",null},
+                {"Schrank","der",null},
+                {"Spiel","das",null},
+                {"Ding","das",null},
+                {"Briefmarke","die",null},
+                {"Lebensmittel","das",null},
+                {"Urlaub","der",null},
+                {"Sport","der",null},
+                {"Wohnung","die",null}
+            };
+            break;
         }
     }
 }

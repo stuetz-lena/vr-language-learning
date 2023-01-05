@@ -47,12 +47,16 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     private Renderer myRenderer;
     private PhotonView photonView;
     private AudioSource wordSource = null;
+    private MeshRenderer roboBody;
+    private Material roboOrg;
+    private Coroutine resetMaterial;
 
     // Start is called before the first frame update
     void Start()
     {
         myCollider = gameObject.GetComponent<Collider>();
         myRenderer = gameObject.GetComponent<Renderer>();
+        roboOrg = roboBody.material;
         if(initialY == 0) //fallback
             initialY = transform.position.y + UnityEngine.Random.Range(-0.1f, 0.2f);
     }
@@ -60,12 +64,13 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     // Update is called once per frame
     void Update()
     {
-        if(!isHit && !isDragged){
+        bool isPaused = gameController.GetIsPaused();
+        if(!isHit && !isDragged && !isPaused){
             //moveForwards
             time += 0.02f;
             float y = Mathf.Sin(time)*0.25f + initialY;
             //gameController.GetPlayerX() + deviationX //position according to player
-            transform.position = new Vector3(deviationX + gameController.getXRigX(), y,  timeFactor * Time.deltaTime + transform.position.z); 
+            transform.position = new Vector3(deviationX + gameController.GetXRigX(), y,  timeFactor * Time.deltaTime + transform.position.z); 
         }
         Quaternion camera = gameController.GetRotation(); //trying to rotate text to cam
         GetComponentInChildren<TextMeshPro>().transform.rotation =  camera;
@@ -79,6 +84,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     }
     public void SetInitialY(float initial){
         initialY = initial;
+    }
+
+    public void SetRoboBody(MeshRenderer m){
+        roboBody = m;
     }
 
     private void OnCollisionEnter(Collision other){
@@ -97,6 +106,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                     success.Play();
                 }
                 myRenderer.material = green;
+                roboBody.material = green;
+                if(resetMaterial != null)
+                    StopCoroutine(resetMaterial);
+                StartCoroutine(ResetRoboMat(1));
                 ParticleSystem ps = this.GetComponent<ParticleSystem>();
                 if(ps){
                     //ParticleSystem.MainModule psMain = ps.main;
@@ -159,6 +172,12 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             }
         }
     }
+    
+    IEnumerator ResetRoboMat(int time){
+        yield return new WaitForSeconds(time);
+        roboBody.material = roboOrg;
+    }
+
     [PunRPC]
     IEnumerator Successful(int viewID){
         Debug.Log("Method executed");
@@ -317,7 +336,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         base.Awake();
 
         afterGrabberGrabbed += () => m_afterGrabbed.Invoke(this);
-        //added Code
+        //added Code to play word audio
         afterGrabberGrabbed += () => PlayAudioText();
         beforeGrabberReleased += () => m_beforeRelease.Invoke(this);
         onGrabberDrop += () => m_onDrop.Invoke(this);
