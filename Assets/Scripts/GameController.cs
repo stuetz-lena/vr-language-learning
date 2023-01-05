@@ -23,6 +23,7 @@ public class GameController : MonoBehaviourPunCallbacks
     public AudioSource final;
     public AudioSource gameSound;
     public GameObject pauseButton;
+    public GameObject pauseCanvasRock;
     public GameObject quitButton;
     public GameObject ufo;
     
@@ -37,9 +38,9 @@ public class GameController : MonoBehaviourPunCallbacks
     private int blubleCounter = 0;
     private int destroyedBlubles = 0;
     private Coroutine blubleRoutine;
-    private GameObject bucket_der;
-    private GameObject bucket_die;
-    private GameObject bucket_das;
+    private GameObject bucketDer;
+    private GameObject bucketDie;
+    private GameObject bucketDas;
     private GameObject robo;
     public Transform XRig; 
     [SerializeField]
@@ -143,15 +144,15 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     public void SetBucketDer(GameObject bucket) {
-       bucket_der = bucket;
+       bucketDer = bucket;
     }
 
     public void SetBucketDie(GameObject bucket) {
-       bucket_die = bucket;
+       bucketDie = bucket;
     }
 
     public void SetBucketDas(GameObject bucket) {
-       bucket_das = bucket;
+       bucketDas = bucket;
     }
 
     public void SetRobo(TextMeshPro tmp, MeshRenderer robr, GameObject rob){
@@ -172,6 +173,12 @@ public class GameController : MonoBehaviourPunCallbacks
         gameSound.Play();
     }
 
+    public void ReviewTutorial(){
+        bucketDer.SetActive(false);
+        bucketDas.SetActive(false);
+        bucketDie.SetActive(false);
+    }
+
     public void PauseGame(){
         if(isPaused){
             if(pauseStart != 0)
@@ -182,6 +189,27 @@ public class GameController : MonoBehaviourPunCallbacks
             ufo.GetComponent<UfoMovement>().enabled = true;
             robo.GetComponent<RoboMovement>().enabled = true;
             gameSound.Play();
+            //In case of Tutorial Continue
+            /*pauseButton.SetActive(true);
+            pauseCanvasRock.SetActive(true);
+            bucketDer.SetActive(true);
+            bucketDas.SetActive(true);
+            bucketDie.SetActive(true);*/
+
+            //Disable buckets and show bubbles
+            Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            rb = bucketDie.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            rb = bucketDas.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            bucketDer.GetComponent<Draggable>().enabled = false;
+            bucketDie.GetComponent<Draggable>().enabled = false;
+            bucketDas.GetComponent<Draggable>().enabled = false;
+            foreach (Transform child in transform)
+            {
+                child.gameObject.SetActive(true);
+            }
         } else {
             isPaused = true;
             pauseStart = Time.time;
@@ -189,6 +217,23 @@ public class GameController : MonoBehaviourPunCallbacks
             ufo.GetComponent<UfoMovement>().enabled = false;
             robo.GetComponent<RoboMovement>().enabled = false;
             gameSound.Stop();
+
+            //Enable buckets and hide bubbles
+            Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb = bucketDie.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb = bucketDas.GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            bucketDer.GetComponent<Draggable>().enabled = true;
+            bucketDie.GetComponent<Draggable>().enabled = true;
+            bucketDas.GetComponent<Draggable>().enabled = true;
+            if(PhotonNetwork.IsMasterClient){
+                foreach (Transform child in transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }
         }
     }
 
@@ -302,10 +347,11 @@ public class GameController : MonoBehaviourPunCallbacks
         //Hide buckets & play sound
         if(final)
             final.Play();
-        bucket_der.SetActive(false);
-        bucket_die.SetActive(false);
-        bucket_das.SetActive(false);
+        bucketDer.SetActive(false);
+        bucketDie.SetActive(false);
+        bucketDas.SetActive(false);
         pauseButton.SetActive(false);
+        pauseCanvasRock.SetActive(false);
         quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
         quitButton.SetActive(true);
        

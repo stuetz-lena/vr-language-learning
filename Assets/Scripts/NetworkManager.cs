@@ -39,7 +39,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private GameObject bucketDie;
     private GameObject bucketDas;
     private GameObject robo;
-    public GameObject ufo;
+    public GameObject pauseScreen;
 
     private bool gameQuitted = false;
 
@@ -65,9 +65,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void UserTriggersStart(){
         gameQuitted = false;
-        if(!PhotonNetwork.InRoom)
+        if(!gameController.GetIsPaused()){
+            if(!PhotonNetwork.InRoom)
             PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
-        StartCoroutine(StartGame());
+            StartCoroutine(StartGame());
+        } else {
+            //gameController.PauseGame();
+            bucketDer.SetActive(true);
+            bucketDas.SetActive(true);
+            bucketDie.SetActive(true);
+            pauseScreen.SetActive(true);
+        }
     }
 
     public override void OnConnectedToMaster()
