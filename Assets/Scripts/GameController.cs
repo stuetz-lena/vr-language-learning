@@ -5,12 +5,13 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
-
-using UnityEngine.InputSystem;
+using UnityEngine.XR;
+//using UnityEngine.InputSystem;
 
 //responsible for Bluble spawn and score management
 public class GameController : MonoBehaviourPunCallbacks
 {
+    public static GameController Instance;
     //public
     public TextMeshProUGUI scoreText; 
     public TextMeshProUGUI timeText;
@@ -45,12 +46,16 @@ public class GameController : MonoBehaviourPunCallbacks
     public Transform XRig; 
     [SerializeField]
     private bool isPaused = false;
+    public bool mover = false;
+
+    private InputDevice _targetDevice;
     
     // Start is called before the first frame update
     void Start()
     {
         //Start bluble Generation > now in NetworkManager
         //StartCoroutine(BlubleCreator(0));
+        Instance = this;
 
         //Set words to one of the three variations
         switch(variant) {
@@ -103,6 +108,22 @@ public class GameController : MonoBehaviourPunCallbacks
             };
             break;
         }
+        TryInitialize();
+    }
+
+    void TryInitialize()
+    {
+        var inputDevices = new List<InputDevice>();
+        InputDeviceCharacteristics rightControllerCharacteristics =
+            InputDeviceCharacteristics.Right | InputDeviceCharacteristics.Controller;
+        InputDevices.GetDevicesWithCharacteristics(rightControllerCharacteristics, inputDevices);
+
+        if (inputDevices.Count == 0)
+        {
+            return;
+        }
+
+        _targetDevice = inputDevices[0];
     }
 
     // Update is called once per frame
@@ -113,13 +134,24 @@ public class GameController : MonoBehaviourPunCallbacks
             //if(timeText.text != TimeSpan.FromSeconds(t).ToString("mm:ss"))
                 timeText.text = string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds); //.ToString("D3")
         }
-        var gamepad = Gamepad.current;
+        if (!_targetDevice.isValid){
+            TryInitialize();
+        }
+        else{
+            if (_targetDevice.TryGetFeatureValue(CommonUsages.secondaryButton, out bool buttonPressed)  && buttonPressed == true)
+            {
+                PauseGame();
+            }
+
+        }
+
+        /*var gamepad = Gamepad.current;
         if (gamepad != null){
             if (gamepad.bButton.wasPressedThisFrame)
             {
                 PauseGame();
             }
-        }    
+        }*/
     }
 
     private void UpdateScore(){
@@ -141,6 +173,14 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public int GetScore() {
         return score;
+    }
+
+    public bool GetMover(){
+        return mover;
+    }
+
+    public void SetMover(bool m){
+        mover = m;
     }
 
     public void SetBucketDer(GameObject bucket) {

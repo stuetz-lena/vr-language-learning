@@ -15,43 +15,44 @@ public class RoboMovement : MonoBehaviour
     [Tooltip("Enable/Disable head movement")]
     public bool headMovement = true;
 
-    private float ctime; //for ciclular
-    private float ftime; //for floating
-    private float hcounter; //for headmovement
-    private float bcounter; //for bodymovement
-    private bool hdirection; //for headmovement
-    private bool bdirection; //for bodymovement
-    private float acounter; //for armmovement
-    private bool adirection; //for armmovement
-
-    [Tooltip("Movement speed factor of head")]
-    public float headMovementSpeed = 3;
     [Tooltip("Movement speed factor of body")]
     public float bodyMovementSpeed = 3;
     [Tooltip("Body movement from degree (+/-)")]
     public float bfrom = -20.0f;
     [Tooltip("Body movement to degree (+/-)")]
     public float bto = 20.0f;
+    [Tooltip("Movement speed factor of head")]
+    public float headMovementSpeed = 3;
     [Tooltip("Head movement from degree (+/-)")]
     public float hfrom = -90.0f;
     [Tooltip("Head movement to degree (+/-)")]
     public float hto = -75.0f;
     [Tooltip("Whole body floating speed factor")]
-    public float floatingSpeed = 0.25f;
+    public float fSpeed = 0.25f;
     [Tooltip("Circluar movement speed factor")]
     public float cspeed = 0.5f;
-    [Tooltip("Arms movement speed factor")]
-    public float aspeed = 0.5f;
     [Tooltip("Circluar movement radius")]
     public float cradius = 2.0f;
+    [Tooltip("Arms movement speed factor")]
+    public float aspeed = 0.5f;
     [Tooltip("Arms movement from degree (+/-)")]
     public float afrom = -39.0f;
     [Tooltip("Arms movement to dregree (+/-)")]
     public float ato = -12.0f;
 
+    private float ctime; //for circlular movement
+    private float ftime; //for floating
+    private float hcounter; //for headmovement
+    private bool hdirection; //for headmovement
+    private float bcounter; //for bodymovement
+    private bool bdirection; //for bodymovement
+    private float acounter; //for armmovement
+    private bool adirection; //for armmovement
+
     private float initialY; 
     private float initialX; 
     private float initialZ;
+
     Transform arms; 
     Transform body;
     Transform head;
@@ -74,83 +75,75 @@ public class RoboMovement : MonoBehaviour
 
         arms = this.transform.Find("arms");
         body = this.transform.Find("body");
-        head = this.transform.Find("Cube");
-
-        /*//to = new Vector3(8.359f, 5.586f+33.399f, 174.944f); //new Vector3(5.868f,6.012f,174.579f);
-        ato = new Vector3(-24.662f, 9.053f+33.399f, 174.064f); //new Vector3(5.868f,6.012f,174.579f);
-        afrom = new Vector3(-39.015f,10.955f,173.053f); // arms.transform.eulerAngles;*/
+        head = this.transform.Find("head");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(armMovement){
-            if(acounter <= 0.09){
+        if(armMovement){ //Arms moving from afrom to ato and reverse
+            //Check if direction change is necessary at the borders 0 and 1 for Math Lerp interpolation
+            if(acounter <= 0.09){ //0.0 was never reached, prevent negative values
                 adirection = true;
             } else if(acounter >= 1){
                 adirection = false;
             }
-
+            //Increase or decrease counter depending on direction
             if(adirection == false){
                 acounter -= Time.deltaTime*aspeed;
-            } else
-            {
+            } else{
                 acounter += Time.deltaTime*aspeed;
             }
             arms.transform.rotation = Quaternion.Euler(Mathf.Lerp(afrom, ato, acounter),arms.transform.eulerAngles.y,arms.transform.eulerAngles.z);
-            //arms.transform.eulerAngles = Vector3.Lerp(afrom, ato, acounter); //Mathf.Abs(Mathf.Sin(armstime)
         }
-        if(headMovement){
-            if(hcounter <= 0.09){
+        if(headMovement){ //Head moving from hfrom to hto and reverse
+            //Check if direction change is necessary at the borders 0 and 1 for Math Lerp interpolation
+            if(hcounter <= 0.09){ //0.0 was never reached, prevent negative values
                 hdirection = true;
             } else if(hcounter >= 1){
                 hdirection = false;
             }
-
+            //Increase or decrease counter depending on direction
             if(hdirection == false){
                 hcounter -= 0.1f*Time.deltaTime*headMovementSpeed;
-            } else
-            {
+            } else{
                 hcounter += 0.1f*Time.deltaTime*headMovementSpeed;
             }
-
             head.transform.rotation = Quaternion.Euler(Mathf.Lerp(hfrom, hto, hcounter),head.transform.eulerAngles.y,head.transform.eulerAngles.z);
-            //head.transform.eulerAngles = new Vector3(hfrom + (hto-hfrom)*hcounter, head.transform.eulerAngles.y, head.transform.eulerAngles.z);
         }
-        if(circleMovement && floating) {
+        if(circleMovement && floating) { //Moving up and down in a circle depending on the radius
             ctime += Time.deltaTime*cspeed;
             ftime += 0.02f;
             float x = Mathf.Cos(ctime)* cradius + (initialX+cradius);
-            float z = Mathf.Sin(ctime) * cradius + (initialZ+cradius);
-            float y = Mathf.Sin(ftime)*floatingSpeed + initialY;
+            float z = Mathf.Sin(ctime)* cradius + (initialZ+cradius);
+            float y = Mathf.Sin(ftime)*fSpeed + initialY;
             this.transform.position = new Vector3(x, y, z);
- 
         } else {
-            if(floating){
+            if(floating){ //Moving up and down over time
                 ftime += 0.02f;
-                float y = Mathf.Sin(ftime)*floatingSpeed + initialY;
-                transform.position = new Vector3(initialX, y,  initialZ); 
+                float y = Mathf.Sin(ftime)*fSpeed + initialY;
+                transform.position = new Vector3(initialX, y, initialZ); 
             }
-            if(circleMovement){
+            if(circleMovement){ //Moving in a circle dependent on the radius
                 ctime += Time.deltaTime*cspeed;
                 float x = Mathf.Cos(ctime)* cradius + (initialX+cradius);
-                float z = Mathf.Sin(ctime) * cradius + (initialZ+cradius);
+                float z = Mathf.Sin(ctime)* cradius + (initialZ+cradius);
                 float y = initialY;
                 this.transform.position = new Vector3(x, y, z);
             }
         }
         
-        if(bodyMovement){
-            if(bcounter <= 0.09){
+        if(bodyMovement){ //Moving body from bfrom to bto and reverse
+            //Check if direction change is necessary at the borders 0 and 1 for Math Lerp interpolation
+            if(bcounter <= 0.09){ //0.0 was never reached, prevent negative values
                 bdirection = true;
             } else if(bcounter >= 1){
                 bdirection = false;
             }
-
+            //Increase or decrease counter depending on direction
             if(bdirection == false){
                 bcounter -= 0.1f*Time.deltaTime*bodyMovementSpeed;
-            } else
-            {
+            } else{
                 bcounter += 0.1f*Time.deltaTime*bodyMovementSpeed;
             }
             body.transform.rotation = Quaternion.Euler(body.transform.eulerAngles.x,this.transform.eulerAngles.y,Mathf.Lerp(bfrom, bto, bcounter));

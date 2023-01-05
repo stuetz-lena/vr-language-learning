@@ -99,6 +99,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }*/      
     }
 
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+    }
+
     public IEnumerator StartGame(){
         yield return new WaitForSeconds(1.0f);
         CreateAvatar();

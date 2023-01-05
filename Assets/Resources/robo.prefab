@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 7039816409859327097}
   - component: {fileID: 1491956267537520806}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
+  m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
 --- !u!114 &2549903018860204972
@@ -344,16 +344,16 @@ MonoBehaviour:
   bodyMovement: 1
   circleMovement: 0
   headMovement: 1
-  headMovementSpeed: 3
   bodyMovementSpeed: 3
   bfrom: -20
   bto: 20
+  headMovementSpeed: 3
   hfrom: -90
   hto: -75
-  floatingSpeed: 0.25
+  fSpeed: 0.25
   cspeed: 0.5
-  aspeed: 0.5
   cradius: 2
+  aspeed: 0.5
   afrom: -39
   ato: -12
 --- !u!1 &3211544790408385103
@@ -450,9 +450,8 @@ GameObject:
   - component: {fileID: 1859132335721959095}
   - component: {fileID: 8819614489067085689}
   - component: {fileID: 4193348283156755980}
-  - component: {fileID: 268857716202924850}
   m_Layer: 0
-  m_Name: Score (old)
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -612,25 +611,3 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 8819614489067085689}
   m_maskType: 0
---- !u!114 &268857716202924850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4894446341732022451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 2
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0

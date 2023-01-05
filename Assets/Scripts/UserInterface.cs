@@ -6,12 +6,17 @@ using UnityEngine.UI;
 
 public class UserInterface : MonoBehaviour
 {
-    [Tooltip("AudioSource to be played when a UI button is clicked")]
+    [Tooltip("AudioSource to be played when a UI button is clicked.")]
     public AudioSource buttonSound;
+
+    [Tooltip("The startscreen to be shown initially.")]
+    public GameObject startScreen;
 
     // Start is called before the first frame update
     void Start()
-    {}
+    {
+        startScreen.SetActive(true);
+    }
 
     // Update is called once per frame
     void Update()
