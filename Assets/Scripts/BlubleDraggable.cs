@@ -117,6 +117,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 PhotonView photonView = GameController.Instance.GetComponent<PhotonView>();
                 photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
                 //GameController.Instance.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text); //scoreIncrease
+                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+                this.gameObject.layer = LayerIgnoreRaycast;
                 Destroy(this.gameObject,success.clip.length); //wait until sound is played*/
             }
             
@@ -142,6 +144,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 }
                 Debug.Log("Leider falsch");
                 GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag); //save wrong answer
+                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+                this.gameObject.layer = LayerIgnoreRaycast;
                 Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
             } //PhotonNetwork.Destroy needed
         
@@ -159,6 +163,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 myRenderer.enabled = false;
                 this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
                 GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text); //save destroyed bluble
+                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+                this.gameObject.layer = LayerIgnoreRaycast;
                 Destroy(this.gameObject, pop.clip.length);
             }
         }

@@ -17,7 +17,6 @@ public class GameController : MonoBehaviourPunCallbacks
     public TextMeshProUGUI timeText;
     public BlubleDraggable bluble;
     //public GameObject player;
-    [HideInInspector]
     public int variant = 1;
     public int deviationZ = 20;
     public int blublesPerRow = 5;
@@ -54,19 +53,19 @@ public class GameController : MonoBehaviourPunCallbacks
         Instance = this;
 
         //Set words to one of the three variations
-        switch(variant) {
+        /*switch(variant) {
             case 1: words = new object[13,3] {
                 {"Internet","das",null},
                 {"Post","die",null},
-                {"Computer","der",null},
+                {"Com-puter","der",null},
                 {"Film","der",null},
                 {"Banane","die",null},
-                {"Entschuldigung","die",null},
+                {"Entschul-digung","die",null},
                 {"Comic","der",null},
                 {"Person","die",null},
                 {"Name","der",null},
                 {"Beispiel","das",null},
-                {"Familienname","der",null},
+                {"Familien-name","der",null},
                 {"Teil","das",null},
                 {"Handy","das",null}
             };
@@ -77,13 +76,13 @@ public class GameController : MonoBehaviourPunCallbacks
                 {"Musik","die",null},
                 {"Quiz","das",null},
                 {"Punkt","der",null},
-                {"Schauspieler","der",null},
+                {"Schau-spieler","der",null},
                 {"Sprache","die",null},
                 {"Ausland","das",null},
                 {"Sache","die",null},
                 {"E-Mail","die",null},
                 {"Tag","der",null},
-                {"Fernseher","der",null},
+                {"Fern-seher","der",null},
                 {"Problem","das",null}
             };
             break; 
@@ -92,15 +91,104 @@ public class GameController : MonoBehaviourPunCallbacks
                 {"Fahrrad","das",null},
                 {"Hose","die",null},
                 {"Klavier","das",null},
-                {"Kühlschrank","der",null},
+                {"Kühl-schrank","der",null},
                 {"Schrank","der",null},
                 {"Spiel","das",null},
                 {"Ding","das",null},
-                {"Briefmarke","die",null},
-                {"Lebensmittel","das",null},
+                {"Brief-marke","die",null},
+                {"Lebens-mittel","das",null},
                 {"Urlaub","der",null},
                 {"Sport","der",null},
-                {"Wohnung","die",null}
+                {"Wohn-ung","die",null}
+            };
+            break;
+        }*/
+        switch(PhotonNetwork.CurrentRoom.PlayerCount) {
+            case 1: words = new object[13,3] {
+                {"Internet","das",null},
+                {"Post","die",null},
+                {"Com-puter","der",null},
+                {"Film","der",null},
+                {"Banane","die",null},
+                {"Entschul-digung","die",null},
+                {"Comic","der",null},
+                {"Person","die",null},
+                {"Name","der",null},
+                {"Beispiel","das",null},
+                {"Familien-name","der",null},
+                {"Teil","das",null},
+                {"Handy","das",null}
+            };
+            break;
+            case 2: words = new object[26,3] {
+                {"Internet","das",null},
+                {"Post","die",null},
+                {"Com-puter","der",null},
+                {"Film","der",null},
+                {"Banane","die",null},
+                {"Entschul-digung","die",null},
+                {"Comic","der",null},
+                {"Person","die",null},
+                {"Name","der",null},
+                {"Beispiel","das",null},
+                {"Familien-name","der",null},
+                {"Teil","das",null},
+                {"Handy","das",null},
+                {"Antwort","die",null},
+                {"Familie","die",null},
+                {"Musik","die",null},
+                {"Quiz","das",null},
+                {"Punkt","der",null},
+                {"Schau-spieler","der",null},
+                {"Sprache","die",null},
+                {"Ausland","das",null},
+                {"Sache","die",null},
+                {"E-Mail","die",null},
+                {"Tag","der",null},
+                {"Fern-seher","der",null},
+                {"Problem","das",null}
+            };
+            break; 
+            case 3: words = new object[39,3] {
+                {"Internet","das",null},
+                {"Post","die",null},
+                {"Com-puter","der",null},
+                {"Film","der",null},
+                {"Banane","die",null},
+                {"Entschul-digung","die",null},
+                {"Comic","der",null},
+                {"Person","die",null},
+                {"Name","der",null},
+                {"Beispiel","das",null},
+                {"Familien-name","der",null},
+                {"Teil","das",null},
+                {"Handy","das",null},
+                {"Antwort","die",null},
+                {"Familie","die",null},
+                {"Musik","die",null},
+                {"Quiz","das",null},
+                {"Punkt","der",null},
+                {"Schau-spieler","der",null},
+                {"Sprache","die",null},
+                {"Ausland","das",null},
+                {"Sache","die",null},
+                {"E-Mail","die",null},
+                {"Tag","der",null},
+                {"Fern-seher","der",null},
+                {"Problem","das",null},
+                {"Blume","die",null},
+                {"Fahrrad","das",null},
+                {"Hose","die",null},
+                {"Klavier","das",null},
+                {"Kühl-schrank","der",null},
+                {"Schrank","der",null},
+                {"Spiel","das",null},
+                {"Ding","das",null},
+                {"Brief-marke","die",null},
+                {"Lebens-mittel","das",null},
+                {"Urlaub","der",null},
+                {"Sport","der",null},
+                {"Wohn-ung","die",null}
             };
             break;
         }
@@ -340,6 +428,7 @@ public class GameController : MonoBehaviourPunCallbacks
         pauseButton.SetActive(false);
         //quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
         nextButton.SetActive(true);
+        robo.SetActive(false);
        
         //Reposition Counter
         //scoreText.transform.position = new Vector3(player.transform.position.x-0.49f, scoreText.transform.position.y-0.07f, scoreText.transform.position.z);
