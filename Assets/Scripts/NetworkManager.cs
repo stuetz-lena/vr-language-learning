@@ -147,6 +147,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //start the game
         startButtonCanvas.SetActive(false);
         GameController.Instance.SetStartTime(Time.time);
+        GameController.Instance.SetWordStore();
         robo.GetComponent<RoboMovement>().enabled = true;
     }
 

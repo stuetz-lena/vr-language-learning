@@ -17,7 +17,7 @@ public class GameController : MonoBehaviourPunCallbacks
     public TextMeshProUGUI timeText;
     public BlubleDraggable bluble;
     //public GameObject player;
-    public int variant = 1;
+    //public int variant = 1;
     public int deviationZ = 20;
     public int blublesPerRow = 5;
     public AudioSource final;
@@ -103,6 +103,9 @@ public class GameController : MonoBehaviourPunCallbacks
             };
             break;
         }*/
+    }
+
+    public void SetWordStore(){
         switch(PhotonNetwork.CurrentRoom.PlayerCount) {
             case 1: words = new object[13,3] {
                 {"Internet","das",null},
@@ -493,55 +496,6 @@ public class GameController : MonoBehaviourPunCallbacks
         blubleCounter = 0;
         destroyedBlubles = 0;
         isPaused = false;
-        switch(variant) {
-            case 1: words = new object[13,3] {
-                {"Internet","das",null},
-                {"Post","die",null},
-                {"Computer","der",null},
-                {"Film","der",null},
-                {"Banane","die",null},
-                {"Entschuldigung","die",null},
-                {"Comic","der",null},
-                {"Person","die",null},
-                {"Name","der",null},
-                {"Beispiel","das",null},
-                {"Familienname","der",null},
-                {"Teil","das",null},
-                {"Handy","das",null}
-            };
-            break;
-            case 2: words = new object[13,3] {
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schauspieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fernseher","der",null},
-                {"Problem","das",null}
-            };
-            break; 
-            case 3: words = new object[13,3] {
-                {"Blume","die",null},
-                {"Fahrrad","das",null},
-                {"Hose","die",null},
-                {"Klavier","das",null},
-                {"Kühlschrank","der",null},
-                {"Schrank","der",null},
-                {"Spiel","das",null},
-                {"Ding","das",null},
-                {"Briefmarke","die",null},
-                {"Lebensmittel","das",null},
-                {"Urlaub","der",null},
-                {"Sport","der",null},
-                {"Wohnung","die",null}
-            };
-            break;
-        }
+        words = null;
     }
 }
