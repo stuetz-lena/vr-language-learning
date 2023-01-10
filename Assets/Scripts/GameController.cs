@@ -170,6 +170,7 @@ public class GameController : MonoBehaviourPunCallbacks
         bucketDer.SetActive(false);
         bucketDas.SetActive(false);
         bucketDie.SetActive(false);
+        robo.SetActive(false);
     }
 
     public void PauseGame(){
@@ -187,9 +188,13 @@ public class GameController : MonoBehaviourPunCallbacks
             Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
             rb = bucketDie.GetComponent<Rigidbody>();
+            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+            bucketDer.layer = LayerIgnoreRaycast;
             rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
             rb = bucketDas.GetComponent<Rigidbody>();
+            bucketDie.layer = LayerIgnoreRaycast;
             rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            bucketDas.layer = LayerIgnoreRaycast;
             bucketDer.GetComponent<Draggable>().enabled = false;
             bucketDie.GetComponent<Draggable>().enabled = false;
             bucketDas.GetComponent<Draggable>().enabled = false;
@@ -208,10 +213,14 @@ public class GameController : MonoBehaviourPunCallbacks
             //Enable buckets and hide bubbles
             Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezeRotation;
+            int LayerIgnoreRaycast = LayerMask.NameToLayer("Default");
+            bucketDer.layer = LayerIgnoreRaycast;
             rb = bucketDie.GetComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezeRotation;
+            bucketDie.layer = LayerIgnoreRaycast;
             rb = bucketDas.GetComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezeRotation;
+            bucketDas.layer = LayerIgnoreRaycast;
             bucketDer.GetComponent<Draggable>().enabled = true;
             bucketDie.GetComponent<Draggable>().enabled = true;
             bucketDas.GetComponent<Draggable>().enabled = true;
@@ -339,7 +348,7 @@ public class GameController : MonoBehaviourPunCallbacks
         float xSteps = 6/blublesPerRow;
         float x = -1.5f - xSteps;
         float ySteps = 2/(words.GetLength(0)/blublesPerRow);
-        float y = 2.2f;
+        float y = 1.4f;
         float rowCounter = 0; 
         for (int i = 0; i < words.GetLength(0); i++){
             //float x = UnityEngine.Random.Range(-3, 3);
@@ -353,10 +362,12 @@ public class GameController : MonoBehaviourPunCallbacks
             x = x + xSteps;
             rowCounter++;
             Vector3 position = new Vector3(Camera.main.transform.position.x+(x-xSteps/2), Camera.main.transform.position.y + (y+ySteps/2), Camera.main.transform.position.z+6.5f);
-            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
+            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, Quaternion.identity, 0).GetComponent<BlubleDraggable>();
             currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[i,1] + " " + (string)words[i,0];
+            int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+            currentBluble.gameObject.layer = LayerIgnoreRaycast;
             //currentBluble.SetIsHit(true);
             currentBluble.SetInitialY(currentBluble.transform.position.y);
             Rigidbody rb = currentBluble.GetComponent<Rigidbody>();

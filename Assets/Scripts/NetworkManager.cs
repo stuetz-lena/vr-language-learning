@@ -70,7 +70,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Verbunden zum Server.");
         if(!gameQuitted) //do not join again if the game was quitted
-            PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
+            PhotonNetwork.JoinOrCreateRoom("bluble1", ROOM_OPTIONS, null);
     }
 
     public override void OnJoinedRoom(){}
@@ -90,6 +90,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             bucketDer.SetActive(true);
             bucketDas.SetActive(true);
             bucketDie.SetActive(true);
+            robo.SetActive(true);
             pauseScreen.SetActive(true);
         }
     }
@@ -131,10 +132,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //Freeze the buckets
         Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+        bucketDer.layer = LayerIgnoreRaycast;
         rb = bucketDie.GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        bucketDie.layer = LayerIgnoreRaycast;
         rb = bucketDas.GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+        bucketDas.layer = LayerIgnoreRaycast;
         bucketDer.GetComponent<Draggable>().enabled = false;
         bucketDie.GetComponent<Draggable>().enabled = false;
         bucketDas.GetComponent<Draggable>().enabled = false;
