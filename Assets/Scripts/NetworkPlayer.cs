@@ -18,6 +18,11 @@ public class NetworkPlayer : MonoBehaviourPun
     //private Transform leftHandRig;
     public Vector3 CameraOffset = new Vector3(0, 0, 0);
 
+    private float transportationCounter = 0; //added for camera movement
+    [Tooltip("Movement distance for results - ungleich 0")]
+    public float transportationDistance = 10.0f;
+    [Tooltip("Movement speed for results")]
+    public float tSpeed = 10.0f;
 
     void Start()
     {
@@ -52,6 +57,16 @@ public class NetworkPlayer : MonoBehaviourPun
             //MapPosition(LeftHand, leftHandRig);
             //MapPosition(RightHand, rightHandRig);
             //Head.transform.position = new Vector3(headRig.position.x, headRig.position.y, headRig.position.z);
+
+            if(GameController.Instance.GetMover()){ //If movement wanted, move depending on time up to the transportationDistance
+                transportationCounter += Time.deltaTime*tSpeed;
+                headRig.position += new Vector3(0,0,Time.deltaTime*tSpeed);
+
+                if(transportationCounter > transportationDistance){ //stop if transportationDistance is reached
+                    GameController.Instance.SetMover(false);
+                    transportationCounter = 0;
+                }
+            }
 
             CameraOffset.y = -2;
             MapPosition(Head, headRig, CameraOffset);
