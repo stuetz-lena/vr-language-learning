@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5192cd519f16bb44db92157b5b4dab8d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8acbcb8cb7795a6459a9f2a6ff979838, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -87,7 +87,6 @@ GameObject:
   - component: {fileID: 1493774277913854274}
   - component: {fileID: 1493774277913854295}
   - component: {fileID: 1493774277913854292}
-  - component: {fileID: 1493774277913854293}
   - component: {fileID: 5311104267576574206}
   - component: {fileID: 5311104267576574205}
   - component: {fileID: 5311104267576574204}
@@ -167,26 +166,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!95 &1493774277913854293
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1493774279542688890}
-  m_Enabled: 0
-  m_Avatar: {fileID: 9000000, guid: 4d7cc98ae5cab2947a8d9fa3c15e4fa8, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!54 &5311104267576574206
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -495,7 +474,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: -255.87799, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.0055, y: 0.0412}
+  m_AnchoredPosition: {x: -0.0055, y: 0.04751}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &5947966446774639879

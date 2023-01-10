@@ -24,7 +24,6 @@ public class GameController : MonoBehaviourPunCallbacks
     public AudioSource final;
     public AudioSource gameSound;
     public GameObject pauseButton;
-    public GameObject pauseCanvasRock;
     public GameObject nextButton;
     public GameObject ufo;
     
@@ -105,22 +104,6 @@ public class GameController : MonoBehaviourPunCallbacks
             };
             break;
         }
-        TryInitialize();
-    }
-
-    void TryInitialize()
-    {
-        var inputDevices = new List<InputDevice>();
-        InputDeviceCharacteristics rightControllerCharacteristics =
-            InputDeviceCharacteristics.Right | InputDeviceCharacteristics.Controller;
-        InputDevices.GetDevicesWithCharacteristics(rightControllerCharacteristics, inputDevices);
-
-        if (inputDevices.Count == 0)
-        {
-            return;
-        }
-
-        _targetDevice = inputDevices[0];
     }
 
     // Update is called once per frame
@@ -131,24 +114,6 @@ public class GameController : MonoBehaviourPunCallbacks
             //if(timeText.text != TimeSpan.FromSeconds(t).ToString("mm:ss"))
                 timeText.text = string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds); //.ToString("D3")
         }
-        if (!_targetDevice.isValid){
-            TryInitialize();
-        }
-        else{
-            if (_targetDevice.TryGetFeatureValue(CommonUsages.secondaryButton, out bool buttonPressed)  && buttonPressed == true)
-            {
-                PauseGame();
-            }
-
-        }
-
-        /*var gamepad = Gamepad.current;
-        if (gamepad != null){
-            if (gamepad.bButton.wasPressedThisFrame)
-            {
-                PauseGame();
-            }
-        }*/
     }
 
     private void UpdateScore(){
@@ -364,7 +329,6 @@ public class GameController : MonoBehaviourPunCallbacks
         bucketDie.SetActive(false);
         bucketDas.SetActive(false);
         pauseButton.SetActive(false);
-        pauseCanvasRock.SetActive(false);
         //quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
         nextButton.SetActive(true);
        
