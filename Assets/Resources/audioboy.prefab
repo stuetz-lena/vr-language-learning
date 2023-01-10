@@ -2224,8 +2224,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Head: {fileID: 3522467971668850975}
   CameraOffset: {x: 0, y: 0, z: 0}
-  transportationDistance: 10
-  tSpeed: 10
 --- !u!114 &316273477096723108
 MonoBehaviour:
   m_ObjectHideFlags: 0

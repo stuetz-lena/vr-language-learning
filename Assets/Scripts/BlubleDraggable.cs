@@ -119,7 +119,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 //GameController.Instance.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text); //scoreIncrease
                 int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
                 this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject,success.clip.length); //wait until sound is played*/
+                //Destroy(this.gameObject,success.clip.length); //wait until sound is played*/
+                BlubleDestroyer(success.clip.length);
             }
             
             if ((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("die"))){
@@ -146,7 +147,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag); //save wrong answer
                 int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
                 this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
+                //Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
+                BlubleDestroyer(fail.clip.length-1);
             } //PhotonNetwork.Destroy needed
         
             if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if the hit the player
@@ -165,9 +167,19 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text); //save destroyed bluble
                 int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
                 this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject, pop.clip.length);
+                //Destroy(this.gameObject, pop.clip.length);
+                BlubleDestroyer(pop.clip.length);
             }
         }
+    }
+
+    public void BlubleDestroyer(float time){
+        StartCoroutine(DestroyBluble(time));
+    }
+
+    private IEnumerator DestroyBluble(float time){
+        yield return new WaitForSeconds(time);
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
     /*[PunRPC] //IEnumerator

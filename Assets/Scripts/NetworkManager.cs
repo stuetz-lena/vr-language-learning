@@ -70,7 +70,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Verbunden zum Server.");
         if(!gameQuitted) //do not join again if the game was quitted
-            PhotonNetwork.JoinOrCreateRoom("bluble1", ROOM_OPTIONS, null);
+            PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
     }
 
     public override void OnJoinedRoom(){}

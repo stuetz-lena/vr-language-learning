@@ -43,66 +43,12 @@ public class GameController : MonoBehaviourPunCallbacks
     public Transform XRig; 
     [SerializeField]
     private bool isPaused = false;
-    public bool mover = false;
-
-    private InputDevice _targetDevice;
+    private float deviationYPlayers = 0;
     
     // Start is called before the first frame update
     void Start()
     {
         Instance = this;
-
-        //Set words to one of the three variations
-        /*switch(variant) {
-            case 1: words = new object[13,3] {
-                {"Internet","das",null},
-                {"Post","die",null},
-                {"Com-puter","der",null},
-                {"Film","der",null},
-                {"Banane","die",null},
-                {"Entschul-digung","die",null},
-                {"Comic","der",null},
-                {"Person","die",null},
-                {"Name","der",null},
-                {"Beispiel","das",null},
-                {"Familien-name","der",null},
-                {"Teil","das",null},
-                {"Handy","das",null}
-            };
-            break;
-            case 2: words = new object[13,3] {
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schau-spieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fern-seher","der",null},
-                {"Problem","das",null}
-            };
-            break; 
-            case 3: words = new object[13,3] {
-                {"Blume","die",null},
-                {"Fahrrad","das",null},
-                {"Hose","die",null},
-                {"Klavier","das",null},
-                {"Kühl-schrank","der",null},
-                {"Schrank","der",null},
-                {"Spiel","das",null},
-                {"Ding","das",null},
-                {"Brief-marke","die",null},
-                {"Lebens-mittel","das",null},
-                {"Urlaub","der",null},
-                {"Sport","der",null},
-                {"Wohn-ung","die",null}
-            };
-            break;
-        }*/
     }
 
     public void SetWordStore(){
@@ -224,14 +170,6 @@ public class GameController : MonoBehaviourPunCallbacks
         return robo;
     }
 
-    public bool GetMover(){
-        return mover;
-    }
-
-    public void SetMover(bool m){
-        mover = m;
-    }
-
     public void SetBucketDer(GameObject bucket) {
        bucketDer = bucket;
     }
@@ -328,7 +266,7 @@ public class GameController : MonoBehaviourPunCallbacks
         blubleRoutine = StartCoroutine(BlubleCreator(0));
     }
 
-    public IEnumerator BlubleCreator(int time){
+    public IEnumerator BlubleCreator(float time){
         yield return new WaitForSeconds(time);
         CreateBluble();
     }
@@ -341,7 +279,7 @@ public class GameController : MonoBehaviourPunCallbacks
             blubleCounter++;
             words[index,2] = false;
             //Create new bluble
-            float x = UnityEngine.Random.Range(-0.5f, 0.5f);
+            float x = UnityEngine.Random.Range(-0.5f*PhotonNetwork.CurrentRoom.PlayerCount, 0.5f*PhotonNetwork.CurrentRoom.PlayerCount);
             float initalY = Camera.main.transform.position.y+UnityEngine.Random.Range(0.7f,1);
             Vector3 position = new Vector3(Camera.main.transform.position.x+x, initalY, Camera.main.transform.position.z+deviationZ);
             BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
@@ -360,7 +298,7 @@ public class GameController : MonoBehaviourPunCallbacks
             audio.priority = 0;
             //Debug.Log(words[index,0] + ", " + words[index,1]);
             //Initiate next bluble
-            blubleRoutine = StartCoroutine(BlubleCreator(5));
+            blubleRoutine = StartCoroutine(BlubleCreator(5.0f/PhotonNetwork.CurrentRoom.PlayerCount));
         } else if(blubleCounter < words.GetLength(0)) { //if bluble already created start again, until all are finished
             CreateBluble();
             //photonView.RPC("CreateBluble", RpcTarget.All);

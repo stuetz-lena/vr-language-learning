@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class RoboMaterialController : MonoBehaviour
 {
-    private MeshRenderer myRenderer;
-    [Tooltip("Material for bluble and robo to be set in case of correct sorting")]
+    [Tooltip("Material for robo to be set in case of correct sorting")]
     public Material green;
+    
+    private MeshRenderer myRenderer;
     private Material orgMaterial; 
     private Coroutine resetMaterial; //to handle sortings with a short time difference only one coroutine is allowed at a time
 
@@ -18,9 +19,7 @@ public class RoboMaterialController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {  
-    }
+    void Update(){}
 
     public void RoboChangeMaterial(){
         myRenderer.material = green;
