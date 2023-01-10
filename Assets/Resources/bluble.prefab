@@ -311,15 +311,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posOffset: {x: 0, y: 0, z: 0}
   rotOffset: {x: 0, y: 0, z: 0}
-  gameController: {fileID: 151119160180665309, guid: b79d333885eb74b55a3fea9ff1ca149f, type: 3}
-  timeFactor: -1
+  timeFactor: 1
+  fSpeed: 0.25
+  emergingBluble: {fileID: 7771117799808894911}
   fail: {fileID: 3477469394664784070}
   success: {fileID: 136782013604406402}
   pop: {fileID: 3278067615783326222}
-  emergingBluble: {fileID: 7771117799808894911}
   green: {fileID: 2100000, guid: 8d8ed9826bd3744e9abdda47d204db90, type: 2}
   red: {fileID: 2100000, guid: 932bf6bc8a6ce45f4905372d5e56775f, type: 2}
-  isHit: 0
   m_initGrabDistance: 0.5
   m_followingDuration: 0.04
   m_overrideMaxAngularVelocity: 1

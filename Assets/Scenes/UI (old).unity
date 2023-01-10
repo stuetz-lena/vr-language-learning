@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571336, b: 0.3069219, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -277,8 +277,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Cooperation
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -750,8 +750,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: French
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1452,8 +1452,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Which language would you like to parctice?
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2541,8 +2541,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Competition
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2676,8 +2676,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'How to play:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3510,18 +3510,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d428477c443e4fa887d6e1d9cc3ec88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startscreen: {fileID: 2124059694}
-  chooseLanguage: {fileID: 1945557131}
-  playmode: {fileID: 1899173025}
-  level: {fileID: 900273216}
-  letsGo: {fileID: 980482618}
-  tutorial_1: {fileID: 1710520037}
-  tutorial_2: {fileID: 1366458284}
-  pause: {fileID: 1239255356}
-  hud: {fileID: 1876456649}
-  featureAvailableSoon_Lang: {fileID: 1078872076}
-  featureAvailableSoon_Mode: {fileID: 2139380156}
-  featureAvailableSoon_Level: {fileID: 320525691}
+  buttonSound: {fileID: 0}
+  startScreen: {fileID: 0}
 --- !u!4 &592306645
 Transform:
   m_ObjectHideFlags: 0
@@ -3732,8 +3722,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Start the game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4015,8 +4005,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Place chrstyals \nwherever you like"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4150,8 +4140,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Lorem ipsum \ndolor sit amet"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4434,8 +4424,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Single player
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10440,8 +10430,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: German
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10678,8 +10668,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: bluble
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9b10165238d164adbbb3ea77f3a1ced1, type: 2}
-  m_sharedMaterial: {fileID: 8631309722339447220, guid: 9b10165238d164adbbb3ea77f3a1ced1, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -11698,8 +11688,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Spanish
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -12192,8 +12182,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Select your play mode:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13800,8 +13790,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'How to play:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13937,8 +13927,8 @@ MonoBehaviour:
     Pulling the bubbles towards you\r\r\n\nMove the controller: Navigating the bubbles
     towards the right chrystal\r"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -14072,8 +14062,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Italian
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
-  m_sharedMaterial: {fileID: 2123796098056180078, guid: 26f9007267b194b30aee225fbf01419b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

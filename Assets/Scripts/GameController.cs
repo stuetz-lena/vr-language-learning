@@ -25,12 +25,11 @@ public class GameController : MonoBehaviourPunCallbacks
     public AudioSource gameSound;
     public GameObject pauseButton;
     public GameObject pauseCanvasRock;
-    public GameObject quitButton;
+    public GameObject nextButton;
     public GameObject ufo;
     
     //private
     private TextMeshPro roboText;
-    private MeshRenderer roboRenderer;
     private int score = 0;
     private float startTime = 0;
     private float pauseTime = 0;
@@ -53,8 +52,6 @@ public class GameController : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        //Start bluble Generation > now in NetworkManager
-        //StartCoroutine(BlubleCreator(0));
         Instance = this;
 
         //Set words to one of the three variations
@@ -159,20 +156,16 @@ public class GameController : MonoBehaviourPunCallbacks
         roboText.text = score.ToString("D2");
     }
 
-    public Quaternion GetRotation() {
-        return XRig.rotation;
-    }
-    
-    public float GetXRigX() {
-        return XRig.position.x;
-    }
-
     public bool GetIsPaused(){
         return isPaused;
     }
 
     public int GetScore() {
         return score;
+    }
+
+    public GameObject GetRobo(){
+        return robo;
     }
 
     public bool GetMover(){
@@ -195,14 +188,9 @@ public class GameController : MonoBehaviourPunCallbacks
        bucketDas = bucket;
     }
 
-    public void SetRobo(TextMeshPro tmp, MeshRenderer robr, GameObject rob){
+    public void SetRobo(TextMeshPro tmp, GameObject rob){
         roboText = tmp;
-        roboRenderer = robr;
         robo = rob;
-    }
-
-    public void SetTransform(Transform rig) {
-       XRig = rig;
     }
 
     public void SetStartTime(float t){
@@ -229,12 +217,6 @@ public class GameController : MonoBehaviourPunCallbacks
             ufo.GetComponent<UfoMovement>().enabled = true;
             robo.GetComponent<RoboMovement>().enabled = true;
             gameSound.Play();
-            //In case of Tutorial Continue
-            /*pauseButton.SetActive(true);
-            pauseCanvasRock.SetActive(true);
-            bucketDer.SetActive(true);
-            bucketDas.SetActive(true);
-            bucketDie.SetActive(true);*/
 
             //Disable buckets and show bubbles
             Rigidbody rb = bucketDer.GetComponent<Rigidbody>();
@@ -283,13 +265,6 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public IEnumerator BlubleCreator(int time){
         yield return new WaitForSeconds(time);
-        //PhotonView photonView = this.GetComponent<PhotonView>();
-        //photonView.RPC("CreateBluble", RpcTarget.All);
-        /*bool isPaused = this.GetIsPaused();
-        while(isPaused){
-            yield return new WaitForSeconds(time);
-            isPaused = this.GetIsPaused();
-        }*/
         CreateBluble();
     }
 
@@ -302,9 +277,9 @@ public class GameController : MonoBehaviourPunCallbacks
             words[index,2] = false;
             //Create new bluble
             float x = UnityEngine.Random.Range(-0.5f, 0.5f);
-            float initalY = XRig.transform.position.y+UnityEngine.Random.Range(0.7f,1);
-            Vector3 position = new Vector3(XRig.transform.position.x+x, initalY, XRig.transform.position.z+deviationZ);
-            BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, XRig.transform.rotation, 0).GetComponent<BlubleDraggable>();
+            float initalY = Camera.main.transform.position.y+UnityEngine.Random.Range(0.7f,1);
+            Vector3 position = new Vector3(Camera.main.transform.position.x+x, initalY, Camera.main.transform.position.z+deviationZ);
+            BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
             //Event mitteilen PhotonView.RPC > RaiseEvent
             currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[index,0];
@@ -312,8 +287,6 @@ public class GameController : MonoBehaviourPunCallbacks
             currentBluble.SetDeviationX(x);
             currentBluble.emergingBluble.Play();
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0];
-            currentBluble.SetGameController(this);
-            currentBluble.SetRoboBody(roboRenderer);
             currentBluble.tag = (string)words[index,1];
             GameObject go = currentBluble.transform.gameObject;
             AudioSource audio = go.AddComponent<AudioSource>() as AudioSource;
@@ -358,7 +331,7 @@ public class GameController : MonoBehaviourPunCallbacks
     public void CheckForTie(){
         if(destroyedBlubles ==  words.GetLength(0)){
             Debug.Log("End");
-            PhotonView photonView = this.GetComponent<PhotonView>();
+            //PhotonView photonView = this.GetComponent<PhotonView>();
             photonView.RPC("ShowResults", RpcTarget.All);
             //ShowResults();
         } else if(blubleCounter == destroyedBlubles){
@@ -392,8 +365,8 @@ public class GameController : MonoBehaviourPunCallbacks
         bucketDas.SetActive(false);
         pauseButton.SetActive(false);
         pauseCanvasRock.SetActive(false);
-        quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
-        quitButton.SetActive(true);
+        //quitButton.transform.position = new Vector3(-0.5f, 0.267f, -10.68f);
+        nextButton.SetActive(true);
        
         //Reposition Counter
         //scoreText.transform.position = new Vector3(player.transform.position.x-0.49f, scoreText.transform.position.y-0.07f, scoreText.transform.position.z);
@@ -415,12 +388,13 @@ public class GameController : MonoBehaviourPunCallbacks
             }
             x = x + xSteps;
             rowCounter++;
-            Vector3 position = new Vector3(XRig.position.x+(x-xSteps/2), XRig.position.y + (y+ySteps/2), XRig.position.z+6.5f);
-            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, XRig.rotation, 0).GetComponent<BlubleDraggable>();
+            Vector3 position = new Vector3(Camera.main.transform.position.x+(x-xSteps/2), Camera.main.transform.position.y + (y+ySteps/2), Camera.main.transform.position.z+6.5f);
+            BlubleDraggable currentBluble = PhotonNetwork.Instantiate("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
             currentBluble.transform.parent = this.transform;
             currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
             currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[i,1] + " " + (string)words[i,0];
-            currentBluble.isHit = true;
+            //currentBluble.SetIsHit(true);
+            currentBluble.SetInitialY(currentBluble.transform.position.y);
             Rigidbody rb = currentBluble.GetComponent<Rigidbody>();
             rb.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
             currentBluble.GetComponent<BlubleDraggable>().enabled = false;
