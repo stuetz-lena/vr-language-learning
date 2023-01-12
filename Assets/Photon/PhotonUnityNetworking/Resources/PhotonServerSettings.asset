@@ -55,6 +55,12 @@ MonoBehaviour:
   - CreateGameController
   - RoboChangeMaterial
   - StartGame
+  - SetUpBuble
+  - QuitGame
+  - SetUpGameObjects
+  - MoveAvatarInScene
+  - PauseGame
+  - SetUpResultBubbles
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

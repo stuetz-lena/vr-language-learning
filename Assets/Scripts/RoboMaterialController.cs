@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RoboMaterialController : MonoBehaviour
 {
+    public static RoboMaterialController Instance; 
+
     [Tooltip("Material for robo to be set in case of correct sorting")]
     public Material green;
     
@@ -14,6 +16,7 @@ public class RoboMaterialController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Instance = this;
         myRenderer = this.GetComponent<MeshRenderer>();
         orgMaterial = myRenderer.material;
     }
@@ -28,7 +31,7 @@ public class RoboMaterialController : MonoBehaviour
         StartCoroutine(ResetMaterial(1));
     }
 
-    private IEnumerator ResetMaterial(int time){
+    IEnumerator ResetMaterial(int time){
         yield return new WaitForSeconds(time);
         myRenderer.material = orgMaterial;
     }
