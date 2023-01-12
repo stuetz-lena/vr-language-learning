@@ -33,9 +33,9 @@ public class GameController : MonoBehaviourPunCallbacks
     [Tooltip("Bubble deviation from camera in result view.")]
     public float resultDeviationZ = 6.5f;
     [Tooltip("Start position for x for bubble grid in result view.")]
-    public float resultStartPosX = -0.4f;
+    public float resultStartPosX = 0.4f; //-0.4f 1.824 0
     [Tooltip("Start position for y for bubble grid in result view.")]
-    public float resultStartPosY = 1.4f;
+    public float resultStartPosY = 0.8f; //-0.245 0.25
 
     [Tooltip("AudioSource to be played during the game mode.")]
     public AudioSource gameSound;

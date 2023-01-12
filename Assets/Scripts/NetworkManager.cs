@@ -117,8 +117,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //Hide own player to avoid confusion
         PhotonView playerView = networkPlayer.GetComponent<PhotonView>();
         if(playerView.IsMine){
-            Component[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>(); //disabling all Renderers
-            foreach (SkinnedMeshRenderer rend in renderers)
+            Component[] renderers = GetComponentsInChildren<Renderer>(); //disabling all Renderers
+            foreach (Renderer rend in renderers)
                 rend.enabled = false;
         }
     }
@@ -129,7 +129,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     void CreateBucketsAndRobo(){ //MasterONLYFunction
-        bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(-2.69f, 0.3f, -12.95f),new Quaternion(0,-0.3f,0,1), 0);
+        bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(-2.69f, 0.3f, -12.95f),new Quaternion(0,-0.3f,0,1), 0);  //-3.512592 -0.01577482 -11.74677, -2.022008 -0.005591959 -10.31855, 0.2157239 0.007748008 -11.52605
         bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(-2.05f, 0.3f, -12.3f), Quaternion.identity, 0);
         bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das",  new Vector3(-1.15f, 0.3f, -13f), new Quaternion(0,0.3f,0,1), 0);
         robo = PhotonNetwork.InstantiateSceneObject("robo",  new Vector3(1.29f, 2.21f, -5.52f), new Quaternion(0,0.3f,0,1), 0); 

@@ -45,6 +45,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     private float deviationX = 0; //set by initalisation to stay constant
     private float initialY = 0; //set by initalisation to stay constant
     private bool isHit = false; //if the bluble was already sorted but still exists
+    private bool standStill = false;
     private AudioSource wordSource = null; //audio for the spoken vocabulary, set by initialisation
 
     // Start is called before the first frame update
@@ -54,7 +55,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     void Update()
     {
         if(PhotonNetwork.IsMasterClient){ //only the master client should control the bubbles
-            if(!isHit && !isDragged && !NetworkManager.Instance.GetIsPaused()){ //bubble should not forcefully move if it is already sorted, currently dragged or the game is paused
+            if(!isHit && !isDragged && !standStill && !NetworkManager.Instance.GetIsPaused()){ //bubble should not forcefully move if it is already sorted, currently dragged or the game is paused
                 time += 0.02f;
                 float y = Mathf.Sin(time) * fSpeed + initialY; //move up and down depending on time
                 transform.position = new Vector3(Camera.main.transform.position.x + deviationX, y,  -1 * timeFactor * Time.deltaTime + transform.position.z); //move forwards towards the camera
@@ -151,7 +152,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                     BlubleDestroyer(fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound
             }
         
-            if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if it  hits the player or walls
+            if(other.collider.tag == "Floor_end") { //destroy blubles if it  hits the player or walls
                 isHit = true;
 
                 if(wordSource){ //if word audio is currently played, stop it
@@ -173,6 +174,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 this.gameObject.GetComponent<Collider>().enabled = false; //disable further events
                 if(PhotonNetwork.IsMasterClient)
                     BlubleDestroyer(pop.clip.length);
+            }
+
+            if(other.collider.tag == "Player") { //destroy blubles if it  hits the player or walls
+                standStill = true;
             }
         }
     }
