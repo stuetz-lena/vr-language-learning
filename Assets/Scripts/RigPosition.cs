@@ -10,6 +10,6 @@ public class RigPosition : MonoBehaviour
     }
 
     public void AdjustPosition(int playerNr){
-        this.transform.position = new Vector3(-1 + playerNr, this.transform.position.y+1, this.transform.position.z);
+        this.transform.position = new Vector3(-1 + playerNr, this.transform.position.y, this.transform.position.z);
     }
 }

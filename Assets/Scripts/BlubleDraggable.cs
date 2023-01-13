@@ -71,7 +71,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             timeCounter += 0.02f; //to enable others to take over the master without a drastic position change
             if(PhotonNetwork.IsMasterClient){ //only the master should actually move the bubbles
                 float y = Mathf.Sin(timeCounter) * fSpeed + initialY; //move up and down depending on time
-                transform.position = new Vector3(Camera.main.transform.position.x + deviationX, y, transform.position.z - timeFactor * 3 * Time.deltaTime); //move towards the camera
+                transform.position = new Vector3(Camera.main.transform.position.x + deviationX, y, transform.position.z - timeFactor * Time.deltaTime); //move towards the camera
             }
             //Rotate text to camera
             this.GetComponentInChildren<TextMeshPro>().transform.rotation = Camera.main.transform.rotation;
