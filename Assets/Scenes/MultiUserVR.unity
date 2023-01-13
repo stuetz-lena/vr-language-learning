@@ -14950,7 +14950,7 @@ MonoBehaviour:
   blublesPerRow: 5
   resultDeviationZ: 6.5
   resultStartPosX: 0.4
-  resultStartPosY: 1
+  resultStartPosY: 0.7
   gameSound: {fileID: 1674053621}
   final: {fileID: 1674053618}
 --- !u!82 &1674053618
@@ -18404,7 +18404,7 @@ MonoBehaviour:
   voiceDetectionThreshold: 0.01
   voiceDetectionDelayMs: 500
   unityMicrophoneDevice: 
-  photonMicrophoneDeviceId: -1
+  photonMicrophoneDeviceId: 0
   interestGroup: 0
   debugEchoMode: 0
   reliableMode: 0
