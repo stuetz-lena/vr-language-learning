@@ -120,11 +120,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         //Hide own player to avoid confusion
         PhotonView playerView = networkPlayer.GetComponent<PhotonView>();
-        if(playerView.IsMine){
+        Debug.Log(playerView);
+        /*if(playerView.IsMine){
             Component[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer rend in renderers)
                 rend.enabled = false;
-        }
+        }*/
     }
 
     [PunRPC]

@@ -342,10 +342,6 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         base.Awake();
 
         afterGrabberGrabbed += () => m_afterGrabbed.Invoke(this);
-
-        //added Code to play word audio on grabbing of the bubble
-        //afterGrabberGrabbed += () => PlayAudioText();
-
         beforeGrabberReleased += () => m_beforeRelease.Invoke(this);
         onGrabberDrop += () => m_onDrop.Invoke(this);
     }

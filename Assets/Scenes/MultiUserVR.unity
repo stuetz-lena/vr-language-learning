@@ -14950,7 +14950,7 @@ MonoBehaviour:
   blublesPerRow: 5
   resultDeviationZ: 6.5
   resultStartPosX: 0.4
-  resultStartPosY: 0.8
+  resultStartPosY: 1
   gameSound: {fileID: 1674053621}
   final: {fileID: 1674053618}
 --- !u!82 &1674053618
