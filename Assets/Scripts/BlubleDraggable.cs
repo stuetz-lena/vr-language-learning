@@ -78,6 +78,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         }
     }
 
+    public void changeMaterial(){
+        this.GetComponent<Renderer>().material = green;
+    }
+
     public void SetDeviationX(float deviation){
         deviationX = deviation;
     }
