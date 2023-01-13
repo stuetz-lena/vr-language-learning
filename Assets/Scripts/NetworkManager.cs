@@ -172,7 +172,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         bucketDas.tag = "Bucket_das"; 
 
         robo.transform.parent = transform;
-        GameController.Instance.SetRobo(robo.GetComponentInChildren<TextMeshPro>()); //Pass to game controller, text needed for score
+        GameController.Instance.SetRoboText(robo.GetComponentInChildren<TextMeshPro>()); //pass to game controller, text needed for score
     }
 
     public void Starter(){ //MasterONLYFunction

@@ -74,7 +74,7 @@ public class GameController : MonoBehaviourPunCallbacks
         return score;
     }
 
-    public void SetRobo(TextMeshPro roboTmp){
+    public void SetRoboText(TextMeshPro roboTmp){
         roboText = roboTmp;
     }
 
