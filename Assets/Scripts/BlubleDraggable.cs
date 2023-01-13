@@ -122,7 +122,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         if(!isHit){ //if the bubble was already sorted in, do not act again 
             Collider myCollider = gameObject.GetComponent<Collider>();
             if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
-                 Debug.Log("here correct " + this.GetComponentInChildren<TextMeshPro>().text);
+                Debug.Log("here correct " + this.GetComponentInChildren<TextMeshPro>().text);
                 Debug.Log("Correct!");
                 isHit = true; //save sorting
 
@@ -153,6 +153,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 if(PhotonNetwork.IsMasterClient)
                     StartCoroutine(DestroyBluble(success.clip.length));
             } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
+                Debug.Log("here correct " + this.GetComponentInChildren<TextMeshPro>().text);
                 Debug.Log("Wrong :/");
                 isHit = true; //save sorting
             
@@ -214,14 +215,10 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     }
 
     IEnumerator DestroyBluble(float time){ //MasterONLYfunction
-this.GetComponent<PhotonView>().TransferOwnership(0);
-
         yield return new WaitForSeconds(time); //wait for audio clip end
-
-
-
-        if(this.GetComponent<PhotonView>().IsMine)
-            PhotonNetwork.Destroy(this.gameObject);
+        //this.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+        //if(this.GetComponent<PhotonView>().IsMine)
+            //PhotonNetwork.Destroy(this.gameObject);
     }
 
 
