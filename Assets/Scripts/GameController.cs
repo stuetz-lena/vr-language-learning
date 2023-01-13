@@ -243,7 +243,7 @@ public class GameController : MonoBehaviourPunCallbacks
             photonView.RPC("SetUpBuble", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, index, initalY, deviationX);
             
             //Initiate next bluble
-            blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount); //time to wait for a new bubble is depends on player amount
+            blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); //time to wait for a new bubble is depends on player amount
         } else if(blubleCounter < words.GetLength(0)) { //if the bubble was already created, try a new one
             CreateBluble();
         }
