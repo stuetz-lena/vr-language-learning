@@ -121,8 +121,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //Hide own player to avoid confusion
         PhotonView playerView = networkPlayer.GetComponent<PhotonView>();
         Debug.Log(playerView);
-        if(playerView.IsMine && playerView.gameObject.tag == "Player"){
-            Component[] renderers = GetComponentsInChildren<Renderer>();
+        if(playerView.IsMine){
+            Component[] renderers = networkPlayer.GetComponentsInChildren<Renderer>();
             foreach (Renderer rend in renderers)
                 rend.enabled = false;
         }
