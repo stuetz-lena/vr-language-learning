@@ -33,7 +33,7 @@ public class GameController : MonoBehaviourPunCallbacks
     [Tooltip("Start position for x for bubble grid in result view.")]
     public float resultStartPosX = 0.4f; //-0.4f 1.824 0
     [Tooltip("Start position for y for bubble grid in result view.")]
-    public float resultStartPosY = 0.8f; //-0.245 0.25
+    public float resultStartPosY = 0.9f; //-0.245 0.25
 
     [Tooltip("AudioSource to be played during the game mode.")]
     public AudioSource gameSound;

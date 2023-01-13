@@ -214,7 +214,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
 
     IEnumerator DestroyBluble(float time){ //MasterONLYfunction
         yield return new WaitForSeconds(time); //wait for audio clip end
-        PhotonNetwork.Destroy(this.gameObject);
+        if(this.GetComponent<PhotonView>().IsMine)
+            PhotonNetwork.Destroy(this.gameObject);
     }
     //---- addedCodeEnd ------
 
