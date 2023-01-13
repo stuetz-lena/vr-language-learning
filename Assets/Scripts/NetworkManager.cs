@@ -182,9 +182,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [PunRPC]
     void StartGame(int bucketDerId, int bucketDieId, int bucketDasId, int roboId){
-        if(!PhotonNetwork.IsMasterClient && bucketDer == null){ //if the client joined late
+        /*if(!PhotonNetwork.IsMasterClient && bucketDer == null){ //if the client joined late
             SetUpGameObjects(bucketDerId, bucketDieId, bucketDasId, roboId);
-        }
+        }*/
         if(!PhotonNetwork.IsMasterClient)
             UserInterface.Instance.TriggerWaitForMaster(false);
 
@@ -283,7 +283,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Destroy(robo);
         }
         GameController.Instance.QuitGame();
-        //PhotonNetwork.LeaveRoom();
+        PhotonNetwork.LeaveRoom();
     }
 
     public void ShutDown(){ //completely closing the application

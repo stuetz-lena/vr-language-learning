@@ -5,8 +5,6 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
-using UnityEngine.XR;
-//using UnityEngine.InputSystem;
 
 //responsible for Bluble spawn and score management
 public class GameController : MonoBehaviourPunCallbacks
@@ -28,7 +26,7 @@ public class GameController : MonoBehaviourPunCallbacks
     public float deviationYFrom = 0.7f;
     [Tooltip("Upper position for vertical deviation for new bubbles.")]
     public float deviationYTo = 1.0f;
-    [Tooltip("Amount of bubbles per row during result view.")]
+    [Tooltip("Amount of bubbles per row during result view for single user.")]
     public int blublesPerRow = 5;
     [Tooltip("Bubble deviation from camera in result view.")]
     public float resultDeviationZ = 6.5f;
