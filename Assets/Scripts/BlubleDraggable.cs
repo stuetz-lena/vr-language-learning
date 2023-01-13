@@ -181,7 +181,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                     StartCoroutine(DestroyBluble(fail.clip.length-1)); //sound was a bit to long in the end, adjust for other sound or edit sound source
             }
         
-            if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if they hit the player or walls
+            if(other.collider.tag == "Floor_end") { //destroy blubles if they hit the player or walls
                 isHit = true; //save sorting
 
                 if(wordSource) //if the word audio is currently played, stop it
