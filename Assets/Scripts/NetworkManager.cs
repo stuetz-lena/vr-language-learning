@@ -26,39 +26,33 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             "audioboy", "bighead", "unitychan"
         };
 
-    //added code ++
+    //added attributes ++
     public static NetworkManager Instance; 
 
-    [Tooltip("Transform of the XRig.")]
-    [SerializeField]
-    Transform XRRigPosition; //functionality overtaken from RigPosition script as now dependent on player amount
+    [Tooltip("GameObject with the RigPosition script.")][SerializeField]
+    RigPosition XRRigPosition; //to adjust the position
 
-    [Tooltip("GameObject of the top ufo to disable its movement during pauses.")]
-    public GameObject ufo;
+    [Tooltip("GameObject of the moving ufo.")][SerializeField]
+    GameObject ufo; //to disable movement during pauses
+    //Instantiated via this script
+    GameObject bucketDer;
+    GameObject bucketDie;
+    GameObject bucketDas;
+    GameObject robo;
 
-    private GameObject bucketDer;
-    private GameObject bucketDie;
-    private GameObject bucketDas;
-    private GameObject robo;
-
-    private bool isPaused = false;
-    private bool gameQuitted = false;
-    private bool tutorialFinished = false;
-    // -- addedCode
+    bool isPaused = false;
+    bool tutorialFinished = false;
+    // -- attributes
     
     void Awake(){
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
-    void Start()
-    {
+    void Start(){
         Instance = this;
         Debug.Log("PhotonLogin: Verbindung zum Server wird hergestellt...");
         PhotonNetwork.GameVersion = GAME_VERSION;
         PhotonNetwork.ConnectUsingSettings();
-
-        XRRigPosition.transform.position = new Vector3(PhotonNetwork.LocalPlayer.ActorNumber * 2, 0.25f, -14.5f); //position player based on player number
-        UserInterface.Instance.RepositionCanvas(); //now that the camera position is clear, adjust the UI canvas
     }
 
     void Update(){}
@@ -66,11 +60,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Verbunden zum Server.");
-        if(!gameQuitted) //do not join again if the game was quit
-            PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
+        PhotonNetwork.CreateRoom("bluble", ROOM_OPTIONS, null);   
     }
 
-    public override void OnJoinedRoom(){}
+    public override void OnJoinedRoom(){
+        XRRigPosition.AdjustPosition(PhotonNetwork.LocalPlayer.ActorNumber); //position player based on player number
+        UserInterface.Instance.RepositionCanvas(); //now that the camera position is clear, adjust the UI canvas
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if(PhotonNetwork.IsMasterClient && tutorialFinished)
+            photonView.RPC("SetUpGameObjects", newPlayer, bucketDer.GetComponent<PhotonView>().ViewID, bucketDie.GetComponent<PhotonView>().ViewID, bucketDas.GetComponent<PhotonView>().ViewID, robo.GetComponent<PhotonView>().ViewID);
+    }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
@@ -81,12 +83,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         return isPaused;
     }
 
-    public void UserEntersGameMode(){
+    public void UserEntersGameMode(){ //after tutorial
         tutorialFinished = true;
-        gameQuitted = false; //in case it is a new try
         if(!isPaused){ //if we are not coming from reviewing the tutorial we are at the start
             if(!PhotonNetwork.InRoom)
-                PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
+                PhotonNetwork.JoinRoom("bluble"); //PhotonNetwork.JoinOrCreateRoom("bluble", ROOM_OPTIONS, null);
             StartCoroutine(SetUpGame()); 
         } else { //otherwise we need to go back to the pause screen
             TriggerGameObjects(true);
@@ -95,15 +96,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     IEnumerator SetUpGame(){
-        yield return new WaitForSeconds(1.0f); //inserted a delay due to the otherwise too quick switch of sound and visuals
+        yield return new WaitForSeconds(1.0f); //inserted a delay due to the otherwise very quick switch of sound and visuals
         CreateAvatar();
-        if(PhotonNetwork.IsMasterClient){ //if master client, instantiate the objects and show the start button
+        GameController.Instance.MakeSound(); //start gameplay sound
+        if(PhotonNetwork.IsMasterClient){ //if master client instantiate the objects and show the start button
             CreateBucketsAndRobo();
-            UserInterface.Instance.TriggerStartButton(true);
-        } else if(tutorialFinished && bucketDer != null){
+            UserInterface.Instance.TriggerStartButtonMaster(true);
+        } /*else if(tutorialFinished && bucketDer != null){
             TriggerGameObjects(true);
+        }*/
+        else{ 
+            UserInterface.Instance.TriggerWaitForMaster(true); //show info that the master needs to start
         }
-        GameController.Instance.MakeSound(); //start the gameplay sound
     }
 
     void CreateAvatar()
@@ -117,7 +121,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //Hide own player to avoid confusion
         PhotonView playerView = networkPlayer.GetComponent<PhotonView>();
         if(playerView.IsMine){
-            Component[] renderers = GetComponentsInChildren<Renderer>(); //disabling all Renderers
+            Component[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer rend in renderers)
                 rend.enabled = false;
         }
@@ -129,10 +133,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     void CreateBucketsAndRobo(){ //MasterONLYFunction
-        bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(-2.69f, 0.3f, -12.95f),new Quaternion(0,-0.3f,0,1), 0);  //-3.512592 -0.01577482 -11.74677, -2.022008 -0.005591959 -10.31855, 0.2157239 0.007748008 -11.52605
-        bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(-2.05f, 0.3f, -12.3f), Quaternion.identity, 0);
-        bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das",  new Vector3(-1.15f, 0.3f, -13f), new Quaternion(0,0.3f,0,1), 0);
-        robo = PhotonNetwork.InstantiateSceneObject("robo",  new Vector3(1.29f, 2.21f, -5.52f), new Quaternion(0,0.3f,0,1), 0); 
+        bucketDer = PhotonNetwork.InstantiateSceneObject("Bucket_der",  new Vector3(-1.61f, -0.02f, -11.75f),new Quaternion(0,-0.3f,0,1), 0);  //new Vector3(-2.69f, 0.3f, -12.95f)
+        bucketDie = PhotonNetwork.InstantiateSceneObject("Bucket_die", new Vector3(0.1f, -0.01f, -10.32f), Quaternion.identity, 0); //new Vector3(-2.05f, 0.3f, -12.3f)
+        bucketDas = PhotonNetwork.InstantiateSceneObject("Bucket_das",  new Vector3(2.12f, 0.01f, -11.53f), new Quaternion(0,0.3f,0,1), 0); //new Vector3(-1.15f, 0.3f, -13f)
+        robo = PhotonNetwork.InstantiateSceneObject("robo",  new Vector3(3.2f, 2.21f, -5.52f), new Quaternion(0,0.3f,0,1), 0); 
         photonView.RPC("SetUpGameObjects", RpcTarget.All, bucketDer.GetComponent<PhotonView>().ViewID, bucketDie.GetComponent<PhotonView>().ViewID, bucketDas.GetComponent<PhotonView>().ViewID, robo.GetComponent<PhotonView>().ViewID);
     }
 
@@ -143,21 +147,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         robo.SetActive(val);
     }
 
-    public void TriggerRobo(bool val){
-        robo.SetActive(val);
-    }
-
     [PunRPC]
     void SetUpGameObjects(int bucketDerId, int bucketDieId, int bucketDasId, int roboId){
-        if(!PhotonNetwork.IsMasterClient){ //establish references based in the viewIds
+        if(!PhotonNetwork.IsMasterClient){ //establish references based on the viewIds
             bucketDer = PhotonView.Find(bucketDerId).gameObject;
             bucketDie = PhotonView.Find(bucketDieId).gameObject;
             bucketDas = PhotonView.Find(bucketDasId).gameObject;
             robo = PhotonView.Find(roboId).gameObject;
-
-            if(!tutorialFinished && bucketDer != null){ //hide for other players while they are still in the menu
+            /*if(!tutorialFinished && bucketDer != null){ //hide for other players while they are still in the menu
                 TriggerGameObjects(false);
-            }
+            }*/
         }
          
         bucketDer.transform.parent = transform;
@@ -186,6 +185,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if(!PhotonNetwork.IsMasterClient && bucketDer == null){ //if the client joined late
             SetUpGameObjects(bucketDerId, bucketDieId, bucketDasId, roboId);
         }
+        if(!PhotonNetwork.IsMasterClient)
+            UserInterface.Instance.TriggerWaitForMaster(false);
 
         //Freeze the buckets to avoid handling problems 
         bucketDer.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
@@ -218,6 +219,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             isPaused = false;
             UserInterface.Instance.TriggerPauseMenu(false);
             UserInterface.Instance.TriggerPauseButton(true);
+            //in case sb was still reading the instructions
+            UserInterface.Instance.TriggerInstructions(false); 
+            TriggerGameObjects(true);
 
             //Enable ufo & robo movement
             ufo.GetComponent<UfoMovement>().enabled = true;
@@ -268,8 +272,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [PunRPC]
     void QuitGame(){ //to enable a new game leave the room and destroy all objects
-        gameQuitted = true;
         isPaused = false;
+        tutorialFinished = false;
         UserInterface.Instance.QuitGame();
         PhotonNetwork.Destroy(networkPlayer);
         if(PhotonNetwork.IsMasterClient){
@@ -279,7 +283,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Destroy(robo);
         }
         GameController.Instance.QuitGame();
-        PhotonNetwork.LeaveRoom();
+        //PhotonNetwork.LeaveRoom();
     }
 
     public void ShutDown(){ //completely closing the application

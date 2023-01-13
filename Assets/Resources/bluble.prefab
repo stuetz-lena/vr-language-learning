@@ -313,12 +313,16 @@ MonoBehaviour:
   rotOffset: {x: 0, y: 0, z: 0}
   timeFactor: 1
   fSpeed: 0.25
-  emergingBluble: {fileID: 7771117799808894911}
+  emerging: {fileID: 7771117799808894911}
   fail: {fileID: 3477469394664784070}
   success: {fileID: 136782013604406402}
   pop: {fileID: 3278067615783326222}
   green: {fileID: 2100000, guid: 8d8ed9826bd3744e9abdda47d204db90, type: 2}
   red: {fileID: 2100000, guid: 932bf6bc8a6ce45f4905372d5e56775f, type: 2}
+  correctColorStart: {r: 0, g: 1, b: 0, a: 0.8}
+  correctColorEnd: {r: 0.43, g: 0.01, b: 0.47, a: 0.5}
+  wrongColorStart: {r: 1, g: 0, b: 0, a: 0.8}
+  wrongColorEnd: {r: 0.43, g: 0.01, b: 0.47, a: 0.5}
   m_initGrabDistance: 0.5
   m_followingDuration: 0.04
   m_overrideMaxAngularVelocity: 1
@@ -332,6 +336,18 @@ MonoBehaviour:
       - m_Target: {fileID: 5207961039602636095}
         m_TargetAssemblyTypeName: Photon.Pun.PhotonView, PhotonUnityNetworking
         m_MethodName: RequestOwnership
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8933483967695094068}
+        m_TargetAssemblyTypeName: BlubleDraggable, Assembly-CSharp
+        m_MethodName: PlayAudioText
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -370,6 +386,18 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8933483967695094068}
+        m_TargetAssemblyTypeName: BlubleDraggable, Assembly-CSharp
+        m_MethodName: TriggerStandStill
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!82 &3477469394664784070
 AudioSource:

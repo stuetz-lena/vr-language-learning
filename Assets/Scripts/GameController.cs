@@ -242,10 +242,10 @@ public class GameController : MonoBehaviourPunCallbacks
             float initalY = Camera.main.transform.position.y + UnityEngine.Random.Range(deviationYFrom, deviationYTo);
             Vector3 position = new Vector3(Camera.main.transform.position.x + deviationX, initalY, Camera.main.transform.position.z + blubleDeviationZ);
             BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
-            photonView.RPC("SetUpBuble", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, index, initalY, deviationX);
+            photonView.RPC("SetUpBuble", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, index, initalY-2, deviationX);
             
             //Initiate next bluble
-            blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); //time to wait for a new bubble is depends on player amount
+            blubleRoutine = StartCoroutine(BlubleCreator((emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)/3)); //time to wait for a new bubble is depends on player amount
         } else if(blubleCounter < words.GetLength(0)) { //if the bubble was already created, try a new one
             CreateBluble();
         }
@@ -267,13 +267,12 @@ public class GameController : MonoBehaviourPunCallbacks
         currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0]; //set text
         currentBluble.tag = (string)words[index,1]; //set tag
 
-        currentBluble.MakeSound(); //play sound for emerging bubble
-
         //Set the word audio
         AudioSource audio = currentBluble.gameObject.AddComponent<AudioSource>() as AudioSource; 
         audio.clip = Resources.Load("Audio/" + (string)words[index,0]) as AudioClip;
         audio.playOnAwake = false;
         audio.priority = 0;
+        currentBluble.SetWordSource(audio);
     }
 
     public void Congrats(int points, string word){ //correct sorting, increase score and write to array
@@ -316,8 +315,9 @@ public class GameController : MonoBehaviourPunCallbacks
             Debug.Log("End");
             ShowResults();
             //photonView.RPC("ShowResults", RpcTarget.All);
-        } else if(blubleCounter == destroyedBlubles){
-            StopCoroutine(blubleRoutine); //have only one routine running at a time
+        } else if(blubleCounter == destroyedBlubles && PhotonNetwork.IsMasterClient){
+            if(blubleRoutine != null)
+                StopCoroutine(blubleRoutine); //have only one routine running at a time
             blubleRoutine = StartCoroutine(BlubleCreator(0)); //new routine with zero delay
         }
     }
@@ -326,7 +326,6 @@ public class GameController : MonoBehaviourPunCallbacks
     void ShowResults(){
         //Hide buckets, adjust UI & play sound
         NetworkManager.Instance.TriggerGameObjects(false);
-        NetworkManager.Instance.TriggerRobo(true);
         UserInterface.Instance.TriggerPauseButton(false);
         UserInterface.Instance.TriggerNextButton(true);
         if(final)
@@ -351,23 +350,26 @@ public class GameController : MonoBehaviourPunCallbacks
                 rowCounter++;
                 Vector3 position = new Vector3(Camera.main.transform.position.x + (x-xSteps/2), Camera.main.transform.position.y + (y+ySteps/2), Camera.main.transform.position.z + resultDeviationZ);
                 BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Quaternion.identity, 0).GetComponent<BlubleDraggable>(); 
-                photonView.RPC("SetUpResultBubbles", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, i);
+                photonView.RPC("SetUpResultBubbles", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, i, (string)words[i,0], (string)words[i,1], words[i,2].ToString());
             }
         }
     }
 
     [PunRPC]
-    void SetUpResultBubbles(int viewID, int i){
+    void SetUpResultBubbles(int viewID, int i, string word0, string word1, string word2){
+        /*if(!PhotonNetwork.IsMasterClient)
+            words = word;*/
         BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); //get the current bubble
         currentBluble.transform.parent = this.transform;
-        currentBluble.gameObject.name = "Bluble " + (string)words[i,0];
+        currentBluble.gameObject.name = "Bluble " + word0;
 
         //Show the right result and change bubble color based on correct/wrong sorting
-        currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[i,1] + " " + (string)words[i,0];
-        if(String.Equals(words[i,2].ToString(), "True")){
-            currentBluble.GetComponent<Renderer>().material = currentBluble.green;
-        } else if (!String.Equals(words[i,2].ToString(), "False")) {
-            currentBluble.GetComponent<Renderer>().material = currentBluble.red;
+        currentBluble.GetComponentInChildren<TextMeshPro>().text = word1 + " " + word0;
+        Debug.Log(word2);
+        if(String.Equals(word2, "True")){
+            currentBluble.GetComponent<Renderer>().material = currentBluble.GetGreen();
+        } else if (!String.Equals(word2, "False")) {
+            currentBluble.GetComponent<Renderer>().material = currentBluble.GetRed();
         }  
 
         //Disable any movement or selection
@@ -388,8 +390,7 @@ public class GameController : MonoBehaviourPunCallbacks
             gameSound.Play();
 
             //Show bubbles again
-            foreach (Transform child in transform)
-            {
+            foreach (Transform child in transform){
                 if(child.gameObject.GetComponent<BlubleDraggable>() != null);
                     child.gameObject.SetActive(true);
             }
@@ -409,13 +410,13 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void QuitGame(){
         //Stop bubble generation & sound
-        StopCoroutine(blubleRoutine);
+        if(blubleRoutine != null)
+            StopCoroutine(blubleRoutine);
         gameSound.Stop();  
 
         //Remove all bubbles
         if(PhotonNetwork.IsMasterClient){
-            foreach (Transform child in transform)
-            {
+            foreach (Transform child in transform){
                 PhotonNetwork.Destroy(child.gameObject);
             }
         }

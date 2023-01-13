@@ -8,27 +8,32 @@ public class UserInterface : MonoBehaviour
 {
     public static UserInterface Instance;
 
-    [Tooltip("The startscreen to be shown initially.")]
-    public GameObject startScreen;
-    [Tooltip("Canvas with the start button.")]
-    public GameObject startButtonCanvas;
-    [Tooltip("The screen shown while the game is paused.")]
-    public GameObject pauseMenu;
-    [Tooltip("The canvas with the head up display.")]
-    public GameObject HUD;
-    [Tooltip("The pause button within the HUD.")]
-    public GameObject HUDPauseButton;
-    [Tooltip("The next button within the HUD.")]
-    public GameObject HUDNextButton;
+    [Tooltip("The start canvas to be shown initially.")][SerializeField]
+    GameObject startScreen;
+    [Tooltip("Canvas with the start button for the master.")][SerializeField]
+    GameObject startButtonMaster;
+    [Tooltip("Canvas with the waiting info for clients.")][SerializeField]
+    GameObject waitForMaster;
+    [Tooltip("The canvas shown while the game is paused.")][SerializeField]
+    GameObject pauseMenu;
+    [Tooltip("The canvas with the head up display.")][SerializeField]
+    GameObject HUD;
+    [Tooltip("The pause button within the HUD.")][SerializeField]
+    GameObject HUDPauseButton;
+    [Tooltip("The next button within the HUD.")][SerializeField]
+    GameObject HUDNextButton;
+    [Tooltip("The first instruction canvas.")][SerializeField]
+    GameObject instructions;
+    [Tooltip("The second instruction canvas.")][SerializeField]
+    GameObject instructions2;
     
-    [Tooltip("GameObject with the AudioSource for the menu.")]
-    public GameObject menuSound;
-    [Tooltip("AudioSource to be played when a UI button is clicked.")]
-    public AudioSource buttonSound;
+    [Tooltip("GameObject with the AudioSource for the menu.")][SerializeField]
+    GameObject menuSound;
+    [Tooltip("AudioSource to be played when a UI button is clicked.")][SerializeField]
+    AudioSource buttonSound;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         Instance = this;
         startScreen.SetActive(true);
     }
@@ -36,9 +41,12 @@ public class UserInterface : MonoBehaviour
     // Update is called once per frame
     void Update(){}
 
-    public void TriggerStartButton(bool value){
-        //startButtonCanvas.transform.position =  new Vector3(Camera.main.transform.position.x,startButtonCanvas.transform.position.y,startButtonCanvas.transform.position.z);
-        startButtonCanvas.SetActive(value);
+    public void TriggerStartButtonMaster(bool value){
+        startButtonMaster.SetActive(value);
+    }
+
+    public void TriggerWaitForMaster(bool value){
+        waitForMaster.SetActive(value);
     }
 
     public void TriggerHUD(bool value){
@@ -57,21 +65,29 @@ public class UserInterface : MonoBehaviour
         HUDNextButton.SetActive(value);
     }
 
+    public void TriggerInstructions(bool value){
+        instructions.SetActive(value);
+        instructions2.SetActive(value);
+    }
+
     public void ButtonSound(){
         if(buttonSound)
             buttonSound.Play();
     }
 
     public void RepositionCanvas(){
-        this.transform.position = new Vector3(Camera.main.transform.position.x, this.transform.position.y, this.transform.position.z); //position canvas based on camera x
+        //positioning canvas based on camera x
+        this.transform.position = new Vector3(Camera.main.transform.position.x, this.transform.position.y, this.transform.position.z); 
     }
 
-    public void QuitGame(){ //managing the UI needs to be done via script to be synced on all clients
+    public void QuitGame(){ 
+        //managing the UI needs to be done via script to be synced on all clients with a single click
         menuSound.SetActive(true);
         startScreen.SetActive(true);
-        pauseMenu.SetActive(false);
-        HUD.SetActive(false);
-        HUDPauseButton.SetActive(true);
-        HUDNextButton.SetActive(false);
+        //using the existing functions in case they are extended later  
+        TriggerPauseMenu(false); 
+        TriggerHUD(false);
+        TriggerPauseButton(true);
+        TriggerNextButton(false);
     }
 }
