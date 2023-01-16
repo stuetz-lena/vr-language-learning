@@ -3592,7 +3592,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &461585635
 Canvas:
   m_ObjectHideFlags: 0
@@ -8234,7 +8234,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &786455615
 Canvas:
   m_ObjectHideFlags: 0
@@ -12438,7 +12438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -574, y: 81}
+  m_AnchoredPosition: {x: -574, y: 134.9}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1362703042
@@ -12461,8 +12461,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Trigger button : Selecting an object\n\nJoystick: Pulling the object closer\r\r\n\nMove
-    the controller: Navigating the bubbles towards the correct crystal\r"
+  m_text: "Trigger button : Selecting an object\n\nJoystick: Pulling the object closer\r\r\n\nB
+    button: get hint for selected bubble\n\nMove the controller: Navigating the bubbles
+    towards the correct crystal\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6e3959902f3fc4f59a88577ef17ee8e6, type: 2}
   m_sharedMaterial: {fileID: -3270419788288294047, guid: 6e3959902f3fc4f59a88577ef17ee8e6, type: 2}
@@ -15440,7 +15441,6 @@ GameObject:
   - component: {fileID: 1674053618}
   - component: {fileID: 1674053619}
   - component: {fileID: 1674053621}
-  - component: {fileID: 1674053622}
   m_Layer: 0
   m_Name: Game Controller
   m_TagString: Untagged
@@ -15484,7 +15484,7 @@ MonoBehaviour:
   deviationYTo: 1
   blublesPerRow: 5
   resultDeviationZ: 6.5
-  resultStartPosX: 1.3
+  resultStartPosX: 1.5
   resultStartPosY: 0.7
   gameSound: {fileID: 1674053621}
   final: {fileID: 1674053618}
@@ -15702,19 +15702,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1674053622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1674053615}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96f01794edde4c4e97963f835bd4522, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  node: 5
 --- !u!1 &1684004335
 GameObject:
   m_ObjectHideFlags: 0

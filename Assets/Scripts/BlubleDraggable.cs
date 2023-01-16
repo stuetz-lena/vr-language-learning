@@ -38,6 +38,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     AudioSource success;
     [Tooltip("Audio to be played in case of bluble disappearing")][SerializeField]
     AudioSource pop; 
+    [Tooltip("Audio to be played when hint is used")][SerializeField]
+    AudioSource hint;
 
     [Tooltip("Material for bluble in case of correct sorting (within results)")][SerializeField]
     Material green;
@@ -96,9 +98,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             this.GetComponentInChildren<TextMeshPro>().transform.rotation = Camera.main.transform.rotation;
         }
         UnityEngine.XR.Interaction.Toolkit.InputHelpers.IsPressed(InputDevices.GetDeviceAtXRNode(node), UnityEngine.XR.Interaction.Toolkit.InputHelpers.Button.SecondaryButton, out bool secondaryButton, 0.5f);
-        if (secondaryButton && isGrabbed && !hintUsed)
-        {
-            Debug.Log("secondary with bubble");
+        if (secondaryButton && isGrabbed && !hintUsed){
+            //show hint once when the bubble is grabbed and the secondary button is pressed
             ShowHint();
         }
     }
@@ -141,9 +142,13 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     void Hinter(int viewID){
         BlubleDraggable currentBlubble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>();
         currentBlubble.hintUsed = true; //save usage for score calculation
-        if(currentBlubble.GetComponentInChildren<Button>())
-            currentBlubble.GetComponentInChildren<Button>().interactable = false; //deactivate the button
+        if(hint)
+            hint.Play();
+        /*if(currentBlubble.GetComponentInChildren<Button>())
+            currentBlubble.GetComponentInChildren<Button>().interactable = false; //deactivate the button*/
         currentBlubble.GetComponentInChildren<TextMeshPro>().text = GameController.Instance.GetTranslation(currentBlubble.GetComponentInChildren<TextMeshPro>().text);
+        if(currentBlubble.GetComponentInChildren<Canvas>()) //hide button canvas to restrict hint usage to once
+            currentBlubble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
         StartCoroutine(HideHint(2, viewID));
     }
 
@@ -151,8 +156,6 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         yield return new WaitForSeconds(time); 
         BlubleDraggable currentBlubble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>();
         currentBlubble.GetComponentInChildren<TextMeshPro>().text = orgText; //reset text
-        if(currentBlubble.GetComponentInChildren<Canvas>()) //hide button canvas to restrict hint usage to once
-            currentBlubble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
     }
 
     public void ChangeMaterialOnSelection(){ 

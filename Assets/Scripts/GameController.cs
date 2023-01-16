@@ -31,7 +31,7 @@ public class GameController : MonoBehaviourPunCallbacks
     [Tooltip("Bubble deviation from camera in result view.")][SerializeField]
     float resultDeviationZ = 6.5f;
     [Tooltip("Horizontal start position for bubble grid in result view for single player.")][SerializeField]
-    float resultStartPosX = 1.3f;
+    float resultStartPosX = 1.5f;
     [Tooltip("Vertical start position for bubble grid in result view for single player.")][SerializeField]
     float resultStartPosY = 0.9f;
 
