@@ -32,6 +32,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Tooltip("GameObject with the RigPosition script.")][SerializeField]
     RigPosition XRRigPosition; //to adjust position based on playerNr
 
+    [Tooltip("AudioSource to be played when objects spawn.")][SerializeField]
+    AudioSource emergingSound;
+
     [Tooltip("GameObject of the moving ufo.")][SerializeField]
     GameObject ufo; //to disable movement during pauses
     //Instantiated via this script
@@ -93,7 +96,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     IEnumerator SetUpGame(){
         yield return new WaitForSeconds(1.0f); //inserted a delay due to the otherwise very quick switch of sound and visuals
         CreateAvatar();
-        GameController.Instance.MakeSound(true); //start gameplay sound
+        GameController.Instance.MakeSound(); //start gameplay sound
         if(PhotonNetwork.IsMasterClient){ //if master instantiate objects and show start button
             CreateBucketsAndRobo();
             UserInterface.Instance.TriggerStartButtonMaster(true);
@@ -151,7 +154,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         robo.transform.parent = transform;
         GameController.Instance.SetRoboText(robo.GetComponentInChildren<TextMeshPro>()); //pass to game controller as needed for score
 
-        GameController.Instance.MakeSound(false);
+        emergingSound.Play();
     }
 
     public void TriggerGameObjects(bool val){ //once triggered via UI

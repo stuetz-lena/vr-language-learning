@@ -37,8 +37,6 @@ public class GameController : MonoBehaviourPunCallbacks
 
     [Tooltip("AudioSource to be played during game mode.")][SerializeField]
     AudioSource gameSound;
-    [Tooltip("AudioSource to be played when objects spawn.")][SerializeField]
-    AudioSource emerginSound;
     [Tooltip("AudioSource to be played during result view.")][SerializeField]
     AudioSource final;
 
@@ -231,11 +229,8 @@ public class GameController : MonoBehaviourPunCallbacks
         roboText.text = sc.ToString("D2");
     }
 
-    public void MakeSound(bool game){
-        if(game)
-            gameSound.Play();
-        else    
-            emerginSound.Play();
+    public void MakeSound(){
+        gameSound.Play();
     }
 
     public void FirstBluble(){ //MasterONLYFunction
@@ -306,20 +301,22 @@ public class GameController : MonoBehaviourPunCallbacks
         CheckForTie();
     }
 
-    public void Fail(string word = "false", string bucket = "false"){ //wrong sorting or game floor overflow, save to array
-        if(!String.Equals(word, "false") && !String.Equals(bucket, "false")){ //if wrong sorting
+    public void Fail(string word = "false", string bucket = "false"){
+        if(!word.Equals("false") && !bucket.Equals("false")){
+            //save wrong sorting
             destroyedBlubles++;
             for(int i = 0; i < words.GetLength(0); i++) {
-                if(String.Equals(words[i,0],word)){
-                    words[i,2] = bucket; //save the chosen bucket
+                if(word.Equals(words[i,0])){
+                    words[i,2] = bucket; //saving the chosen bucket
                     break;
                 }
             }
-        } else { //bubble went out of game floor and disappeared - it needs to show up again
+        } else { 
+            //bubble left game floor and disappeared - needs to show up again - reset creation
             blubleCounter--;
             for(int i = 0; i < words.GetLength(0); i++) {
-                if(String.Equals(words[i,0],word)){
-                    words[i,2] = null; //reset array for the item
+                if(word.Equals(words[i,0])){
+                    words[i,2] = null;
                     break;
                 }
             }
@@ -328,19 +325,19 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     void CheckForTie(){
-        //Check if all blubles are gone, so we need to create a new one now or if the game is finished
+        //check if all blubles are gone and game is finished
         if(destroyedBlubles == words.GetLength(0)){
             Debug.Log("End");
             ShowResults();
-            //photonView.RPC("ShowResults", RpcTarget.All);
-        } else if(blubleCounter == destroyedBlubles && PhotonNetwork.IsMasterClient){
+        } else if(blubleCounter == destroyedBlubles && PhotonNetwork.IsMasterClient){ 
+            //game is not finished yet but no more bubbles exist to sort, we need to generate a new one quickly
             if(blubleRoutine != null)
-                StopCoroutine(blubleRoutine); //have only one routine running at a time
-            blubleRoutine = StartCoroutine(BlubleCreator(0)); //new routine with zero delay
+                //we only want one routine running at the same time
+                StopCoroutine(blubleRoutine); 
+            blubleRoutine = StartCoroutine(BlubleCreator(0));
         }
     }
 
-    [PunRPC]
     void ShowResults(){
         //Hide buckets, adjust UI & play sound
         NetworkManager.Instance.TriggerGameObjects(false);
@@ -354,7 +351,7 @@ public class GameController : MonoBehaviourPunCallbacks
             //calculate grid
             int perRow = blublesPerRow*PhotonNetwork.CurrentRoom.PlayerCount;
             float xSteps = (perRow+PhotonNetwork.CurrentRoom.PlayerCount)/perRow;
-            float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 2 - xSteps;
+            float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount*2 - xSteps;
             float ySteps = 2/(words.GetLength(0)/perRow);
             float y = resultStartPosY;
             float rowCounter = 0; 
@@ -362,7 +359,7 @@ public class GameController : MonoBehaviourPunCallbacks
                 if(rowCounter == perRow) {
                     y = y - ySteps;
                     rowCounter = 0;
-                    x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 2 - xSteps;
+                    x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount*2 - xSteps;
                 }
                 x = x + xSteps;
                 rowCounter++;
@@ -375,53 +372,56 @@ public class GameController : MonoBehaviourPunCallbacks
 
     [PunRPC]
     void SetUpResultBubbles(int viewID, string word0, string word1, string word2){
-        /*if(!PhotonNetwork.IsMasterClient)
-            words = word;*/
-        BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); //get the current bubble
+        //get the current bubble
+        BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); 
+
         currentBluble.transform.parent = this.transform;
         currentBluble.gameObject.name = "Bluble " + word0;
 
-        //Show the right result and change bubble color based on correct/wrong sorting
+        //hide hint canvas
+        if(currentBluble.GetComponentInChildren<Canvas>()) 
+            currentBluble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
+
+        //show the right solution & change bubble color based on correct/wrong sorting
         currentBluble.GetComponentInChildren<TextMeshPro>().text = word1 + " " + word0;
-        
-        currentBluble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
         if(String.Equals(word2, "True")){
             currentBluble.GetComponent<Renderer>().material = currentBluble.GetGreen();
         } else if (!String.Equals(word2, "False")) {
             currentBluble.GetComponent<Renderer>().material = currentBluble.GetRed();
         }  
 
-        //Disable any movement or selection
+        //disable movement & selection
         currentBluble.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        //currentBluble.SetInitialY(currentBluble.transform.position.y);
         currentBluble.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
         currentBluble.GetComponent<BlubleDraggable>().enabled = false;
     }
 
     public void PauseGame(){
         if(!NetworkManager.Instance.GetIsPaused()){
-            if(pauseStart != 0) {//Calculate how long the pause has lasted and add it to the pause counter
+            //calculate how long the pause has lasted and add it to the pause counter
+            if(pauseStart != 0) {
                 pauseTime += Time.time - pauseStart;
                 pauseStart = 0;
             }
+            //restart bubble generation & sound
             if(PhotonNetwork.IsMasterClient)
-                blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); //restart bubble generation
+                blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); 
             gameSound.Play();
-
             //Show bubbles again
             foreach (Transform child in transform){
-                if(child.gameObject.GetComponent<BlubleDraggable>() != null);
+                if(child.gameObject.GetComponent<BlubleDraggable>() != null)
                     child.gameObject.SetActive(true);
             }
         } else {
+            //save pause start
             pauseStart = Time.time;
+            //pause bubble generation & sound
             if(blubleRoutine != null)
-                StopCoroutine(blubleRoutine); //pause bubble generation
+                StopCoroutine(blubleRoutine);
             gameSound.Stop();
-            
             //Hide all bubbles
             foreach (Transform child in transform){
-                if(child.gameObject.GetComponent<BlubleDraggable>() != null);
+                if(child.gameObject.GetComponent<BlubleDraggable>() != null)
                     child.gameObject.SetActive(false);
             }
         }
@@ -436,16 +436,17 @@ public class GameController : MonoBehaviourPunCallbacks
         //Remove all bubbles
         if(PhotonNetwork.IsMasterClient){
             foreach (Transform child in transform){
-                PhotonNetwork.Destroy(child.gameObject);
+                if(child.gameObject.GetComponent<BlubleDraggable>() != null);
+                    PhotonNetwork.Destroy(child.gameObject);
             }
         }
 
         //Reset values
         score = 0;
-        UpdateScore();
+        UpdateScore(score);
         startTime = 0;
-        pauseTime = 0;
         pauseStart = 0;
+        pauseTime = 0;
         blubleCounter = 0;
         destroyedBlubles = 0;
         words = null;
@@ -453,9 +454,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void LeaveGame(){
         if(PhotonNetwork.IsMasterClient){
-            int counter = 0;
             for(int i = 0; i < words.GetLength(0); i++){
-                photonView.RPC("UpdateWords", RpcTarget.Others, counter, words[i,0], words[i,1], words[i,2], words[i,3], words.GetLength(0));
+                photonView.RPC("UpdateWords", RpcTarget.Others, i, words[i,0], words[i,1], words[i,2], words[i,3], words.GetLength(0));
             }
         }
     }
