@@ -58,7 +58,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster(){
         Debug.Log("Verbunden zum Server.");
-        PhotonNetwork.CreateRoom("bluble1", ROOM_OPTIONS, null);   
+        PhotonNetwork.CreateRoom("bluble", ROOM_OPTIONS, null);   
     }
 
     public override void OnJoinedRoom(){
@@ -82,7 +82,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void UserEntersGameMode(){ //called after tutorial
         if(!isPaused){ //if we are not coming from reviewing the tutorial we are at the start
             if(!PhotonNetwork.InRoom)
-                PhotonNetwork.JoinRoom("bluble1");
+                PhotonNetwork.JoinRoom("bluble");
             StartCoroutine(SetUpGame()); 
         } else { //otherwise we need to go back to the pause menu
             TriggerGameObjects(true);
@@ -93,7 +93,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     IEnumerator SetUpGame(){
         yield return new WaitForSeconds(1.0f); //inserted a delay due to the otherwise very quick switch of sound and visuals
         CreateAvatar();
-        GameController.Instance.MakeSound(); //start gameplay sound
+        GameController.Instance.MakeSound(true); //start gameplay sound
         if(PhotonNetwork.IsMasterClient){ //if master instantiate objects and show start button
             CreateBucketsAndRobo();
             UserInterface.Instance.TriggerStartButtonMaster(true);
@@ -150,6 +150,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         robo.transform.parent = transform;
         GameController.Instance.SetRoboText(robo.GetComponentInChildren<TextMeshPro>()); //pass to game controller as needed for score
+
+        GameController.Instance.MakeSound(false);
     }
 
     public void TriggerGameObjects(bool val){ //once triggered via UI

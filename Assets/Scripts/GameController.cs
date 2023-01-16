@@ -37,6 +37,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
     [Tooltip("AudioSource to be played during game mode.")][SerializeField]
     AudioSource gameSound;
+    [Tooltip("AudioSource to be played when objects spawn.")][SerializeField]
+    AudioSource emerginSound;
     [Tooltip("AudioSource to be played during result view.")][SerializeField]
     AudioSource final;
 
@@ -229,8 +231,11 @@ public class GameController : MonoBehaviourPunCallbacks
         roboText.text = sc.ToString("D2");
     }
 
-    public void MakeSound(){
-        gameSound.Play();
+    public void MakeSound(bool game){
+        if(game)
+            gameSound.Play();
+        else    
+            emerginSound.Play();
     }
 
     public void FirstBluble(){ //MasterONLYFunction
@@ -449,9 +454,8 @@ public class GameController : MonoBehaviourPunCallbacks
     public void LeaveGame(){
         if(PhotonNetwork.IsMasterClient){
             int counter = 0;
-            foreach(object[] word in words){
-                photonView.RPC("UpdateWords", RpcTarget.Others, counter, word[0], word[1], word[2], word[3], words.GetLength(0));
-                counter++;
+            for(int i = 0; i < words.GetLength(0); i++){
+                photonView.RPC("UpdateWords", RpcTarget.Others, counter, words[i,0], words[i,1], words[i,2], words[i,3], words.GetLength(0));
             }
         }
     }

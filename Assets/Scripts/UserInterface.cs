@@ -32,6 +32,9 @@ public class UserInterface : MonoBehaviour
     [Tooltip("AudioSource to be played when a UI button is clicked.")][SerializeField]
     AudioSource buttonSound;
 
+    [Tooltip("XRig with the camera.")][SerializeField]
+    Transform XRig;
+
     // Start is called before the first frame update
     void Start(){
         Instance = this;
@@ -77,7 +80,7 @@ public class UserInterface : MonoBehaviour
 
     public void RepositionCanvas(){
         //positioning canvas based on camera x
-        this.transform.position = new Vector3(Camera.main.transform.position.x, this.transform.position.y, this.transform.position.z); 
+        this.transform.position = new Vector3(XRig.position.x, this.transform.position.y, this.transform.position.z); 
     }
 
     public void QuitGame(){ 
