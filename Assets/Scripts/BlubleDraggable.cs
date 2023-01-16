@@ -209,31 +209,31 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             PhotonView photonView = this.GetComponent<PhotonView>();
 
             if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
-                if(!PhotonNetwork.IsMasterClient){
+                if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
                     photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } /*else {
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
                     SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
-                } */
+                } 
             } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
-                if(!PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
                     photonView.RPC("SortingOrExit", RpcTarget.All, 2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } else {
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
                     SortingOrExit(2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } 
             }
         
             if(other.collider.tag == "Floor_end") { //destroy bubbles if they hit the walls
-                if(!PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
                     photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } else {
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
                     SortingOrExit(0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 }  
             }
 
             if(other.collider.tag == "Player") { //stop bubble if it hits a player or is pushed on them
-                if(!PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
                     photonView.RPC("TriggerStandStill", RpcTarget.All, this.GetComponent<PhotonView>().ViewID, true);
-                } else {
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
                     TriggerStandStill(this.GetComponent<PhotonView>().ViewID, true);
                 }  
             }
