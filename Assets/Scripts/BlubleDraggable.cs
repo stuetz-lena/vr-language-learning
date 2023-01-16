@@ -207,9 +207,9 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
 
             if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
                 if(!PhotonNetwork.IsMasterClient){
-                    photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
+                    photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } else {
-                    SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
+                    SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } 
             } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
                 if(!PhotonNetwork.IsMasterClient){
