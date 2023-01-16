@@ -290,6 +290,8 @@ public class GameController : MonoBehaviourPunCallbacks
             score += points;
             photonView.RPC("UpdateScore", RpcTarget.All, score);
         }
+        score += points;
+            UpdateScore(score);
         //save the correct sorting
         for(int i = 0; i < words.GetLength(0); i++) {
             if(word.Equals(words[i,0])){

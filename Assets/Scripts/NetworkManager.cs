@@ -44,6 +44,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     GameObject robo;
 
     bool isPaused = false;
+    bool gameStarted = false;
     // -- added attributes
     
     void Awake(){
@@ -193,6 +194,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         bucketDas.layer = LayerIgnoreRaycast;
 
         //Start the game
+        gameStarted = true;
         GameController.Instance.SetStartTime(Time.time);
         GameController.Instance.SetWordStore(); //depends on final player amount
         robo.GetComponent<RoboMovement>().enabled = true; //make robo move
@@ -259,7 +261,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     public void Quitter(){
-        photonView.RPC("QuitGame", RpcTarget.All); //to inform the other clients
+        if(gameStarted)
+            photonView.RPC("QuitGame", RpcTarget.All); //to inform the other clients
+        else    
+            QuitGame();
     }
 
     [PunRPC]
@@ -276,6 +281,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
 
         isPaused = false;
+        gameStarted = false;
         GameController.Instance.QuitGame();
 
         PhotonNetwork.LeaveRoom();
