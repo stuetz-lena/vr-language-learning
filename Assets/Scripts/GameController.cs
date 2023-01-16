@@ -286,10 +286,10 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void Congrats(int points, string word){ 
         //increase score
-        if(PhotonNetwork.IsMasterClient){
+        /*if(PhotonNetwork.IsMasterClient){
             score += points;
             photonView.RPC("UpdateScore", RpcTarget.All, score);
-        }
+        }*/
         score += points;
             UpdateScore(score);
         //save the correct sorting

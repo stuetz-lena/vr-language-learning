@@ -15,7 +15,8 @@ public class PlayerName : MonoBehaviourPun, IPunObservable
 
     void Update(){
         //rotate player name text to other player
-        transform.Find("NameUI").gameObject.transform.rotation = Camera.main.transform.rotation;
+        GameObject name = this.transform.Find("NameUI").gameObject;
+        name.transform.rotation = Quaternion.Euler(Camera.main.transform.eulerAngles.x,name.transform.eulerAngles.y,name.transform.eulerAngles.z);
     }
 
     void ChangeMyName(string name)
