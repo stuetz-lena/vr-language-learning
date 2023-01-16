@@ -10,6 +10,7 @@ public class RigPosition : MonoBehaviour
     }
 
     public void AdjustPosition(int playerNr){
+        //Set start position in game mode depending on playerNr
         this.transform.position = new Vector3(-1 + playerNr, this.transform.position.y, this.transform.position.z);
     }
 }

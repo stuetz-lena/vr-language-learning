@@ -8,7 +8,7 @@ public class UserInterface : MonoBehaviour
 {
     public static UserInterface Instance;
 
-    [Tooltip("The start canvas to be shown initially.")][SerializeField]
+    [Tooltip("Start canvas to be shown initially.")][SerializeField]
     GameObject startScreen;
     [Tooltip("Canvas with the start button for the master.")][SerializeField]
     GameObject startButtonMaster;
@@ -27,7 +27,7 @@ public class UserInterface : MonoBehaviour
     [Tooltip("The second instruction canvas.")][SerializeField]
     GameObject instructions2;
     
-    [Tooltip("GameObject with the AudioSource for the menu.")][SerializeField]
+    [Tooltip("GameObject with the AudioSource played during the menu.")][SerializeField]
     GameObject menuSound;
     [Tooltip("AudioSource to be played when a UI button is clicked.")][SerializeField]
     AudioSource buttonSound;
@@ -49,12 +49,12 @@ public class UserInterface : MonoBehaviour
         waitForMaster.SetActive(value);
     }
 
-    public void TriggerHUD(bool value){
-        HUD.SetActive(value);
-    }
-
     public void TriggerPauseMenu(bool value){
         pauseMenu.SetActive(value);
+    }
+
+    public void TriggerHUD(bool value){
+        HUD.SetActive(value);
     }
 
     public void TriggerPauseButton(bool value){
@@ -81,7 +81,7 @@ public class UserInterface : MonoBehaviour
     }
 
     public void QuitGame(){ 
-        //managing the UI needs to be done via script to be synced on all clients with a single click
+        //managing the UI needs to be done via script to be synced on all clients through a single click
         menuSound.SetActive(true);
         startScreen.SetActive(true);
         //using the existing functions in case they are extended later  

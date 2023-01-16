@@ -11,56 +11,54 @@ public class GameController : MonoBehaviourPunCallbacks
 {
     public static GameController Instance;
 
-    [Tooltip("TextMeshProUGUI element for the score in HUD.")]
-    public TextMeshProUGUI scoreText; 
-    [Tooltip("TextMeshProUGUI element for the time in HUD.")]
-    public TextMeshProUGUI timeText;
+    [Tooltip("TextMeshProUGUI element for the score in HUD.")][SerializeField]
+    TextMeshProUGUI scoreText; 
+    [Tooltip("TextMeshProUGUI element for the time in HUD.")][SerializeField]
+    TextMeshProUGUI timeText;
 
-    [Tooltip("Distance from camera for the bubbles to spawn initally.")]
-    public int blubleDeviationZ = 20;
-    [Tooltip("How long to wait between two bubbles for a single player.")]
-    public float emergingBaseSpeed = 5.0f; 
-    [Tooltip("Half range for horizontal deviation for new bubbles for a single player.")]
-    public float deviationBaseX = 0.5f;
-    [Tooltip("Lower position for vertical deviation for new bubbles.")]
-    public float deviationYFrom = 0.7f;
-    [Tooltip("Upper position for vertical deviation for new bubbles.")]
-    public float deviationYTo = 1.0f;
-    [Tooltip("Amount of bubbles per row during result view for single user.")]
-    public int blublesPerRow = 5;
-    [Tooltip("Bubble deviation from camera in result view.")]
-    public float resultDeviationZ = 6.5f;
-    [Tooltip("Start position for x for bubble grid in result view.")]
-    public float resultStartPosX = 0.4f; //-0.4f 1.824 0
-    [Tooltip("Start position for y for bubble grid in result view.")]
-    public float resultStartPosY = 0.9f; //-0.245 0.25
+    [Tooltip("Distance to camera for bubbles to spawn initally.")][SerializeField]
+    int blubleDeviationZ = 20;
+    [Tooltip("Time difference between two bubbles for single player.")][SerializeField]
+    float emergingBaseSpeed = 5.0f; 
+    [Tooltip("Half range of horizontal deviation of new bubbles for single player.")][SerializeField]
+    float deviationBaseX = 0.5f;
+    [Tooltip("Lower position of vertical deviation for new bubbles.")][SerializeField]
+    float deviationYFrom = 0.7f;
+    [Tooltip("Upper position of vertical deviation for new bubbles.")][SerializeField]
+    float deviationYTo = 1.0f;
+    [Tooltip("Number of bubbles per row during result view for single player.")][SerializeField]
+    int blublesPerRow = 5;
+    [Tooltip("Bubble deviation from camera in result view.")][SerializeField]
+    float resultDeviationZ = 6.5f;
+    [Tooltip("Horizontal start position for bubble grid in result view for single player.")][SerializeField]
+    float resultStartPosX = 1.3f;
+    [Tooltip("Vertical start position for bubble grid in result view for single player.")][SerializeField]
+    float resultStartPosY = 0.9f;
 
-    [Tooltip("AudioSource to be played during the game mode.")]
-    public AudioSource gameSound;
-    [Tooltip("AudioSource to be played during the result view.")]
-    public AudioSource final;
-    
+    [Tooltip("AudioSource to be played during game mode.")][SerializeField]
+    AudioSource gameSound;
+    [Tooltip("AudioSource to be played during result view.")][SerializeField]
+    AudioSource final;
 
-    private TextMeshPro roboText;
-    private int score = 0;
-    private float startTime = 0;
-    private float pauseStart = 0;
-    private float pauseTime = 0;
+    TextMeshPro roboText; //text element on robo
+    int score = 0;
+    float startTime = 0;
+    float pauseStart = 0;
+    float pauseTime = 0;
 
-    private object[,] words;
-    private int blubleCounter = 0; //number of created bubbles
-    private int destroyedBlubles = 0;
-    private Coroutine blubleRoutine;
+    object[,] words; //array with vocabularies
+    int blubleCounter = 0; //number of created bubbles
+    int destroyedBlubles = 0; //number of destroyed bubbles
+    Coroutine blubleRoutine; //to ensure only one coroutine is running at a time 
     
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         Instance = this;
     }
 
     // Update is called once per frame
     void Update(){ 
-        //if a text element is available, the start time was set, the game is not finished yet or currently paused, update the timer
+        //update the time if a text element is available, the start time was set, the game is not finished yet or currently paused
         if(timeText != null && startTime != 0 && (destroyedBlubles <  words.GetLength(0)) && !NetworkManager.Instance.GetIsPaused()){
             TimeSpan t = TimeSpan.FromSeconds(Time.time - startTime - pauseTime); //substract start time (after pushing the button) and pause time from the current time
             if(timeText.text != string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds)) //change in UI if necessary
@@ -70,6 +68,15 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public int GetScore() {
         return score;
+    }
+
+    public String GetTranslation(String basis){
+        for(int i = 0; i < words.GetLength(0); i++) {
+            if(basis.Equals((string)words[i,0])){
+                return (string)words[i,3];
+            }
+        }
+        return basis;
     }
 
     public void SetRoboText(TextMeshPro roboTmp){
@@ -82,141 +89,144 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void SetWordStore(){ //adjust word amout to player amout
         switch(PhotonNetwork.CurrentRoom.PlayerCount) {
-            case 1: words = new object[13,3] {
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schau-spieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fern-seher","der",null},
-                {"Problem","das",null}
+            case 1: words = new object[13,4] {
+                {"Antwort","die",null,"Answer"},
+                {"Familie","die",null,"Family"},
+                {"Musik","die",null,"Music"},
+                {"Quiz","das",null,"Quiz"},
+                {"Punkt","der",null,"Point"},
+                {"Schau-spieler","der",null,"Actor"},
+                {"Sprache","die",null,"Lang-uage"},
+                {"Ausland","das",null,"Abroad"},
+                {"Sache","die",null,"Thing"},
+                {"E-Mail","die",null,"E-Mail"},
+                {"Tag","der",null,"Day"},
+                {"Fern-seher","der",null,"TV"},
+                {"Problem","das",null,"Problem"}
             };
             break;
-            case 2: words = new object[26,3] {
-                {"Internet","das",null},
-                {"Post","die",null},
-                {"Com-puter","der",null},
-                {"Film","der",null},
-                {"Banane","die",null},
-                {"Entschul-digung","die",null},
-                {"Comic","der",null},
-                {"Person","die",null},
-                {"Name","der",null},
-                {"Beispiel","das",null},
-                {"Familien-name","der",null},
-                {"Teil","das",null},
-                {"Handy","das",null},
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schau-spieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fern-seher","der",null},
-                {"Problem","das",null}
+            case 2: words = new object[26,4] {
+                {"Internet","das",null,"Internet"},
+                {"Post","die",null,"Post"},
+                {"Com-puter","der",null,"Com-puter"},
+                {"Film","der",null,"Movie"},
+                {"Banane","die",null,"Banana"},
+                {"Entschul-digung","die",null,"Excuse"},
+                {"Comic","der",null,"Comic"},
+                {"Person","die",null,"Person"},
+                {"Name","der",null,"Name"},
+                {"Beispiel","das",null,"Example"},
+                {"Familien-name","der",null,"Last name"},
+                {"Teil","das",null,"Part"},
+                {"Handy","das",null,"Mobile phone"},
+                {"Antwort","die",null,"Answer"},
+                {"Familie","die",null,"Family"},
+                {"Musik","die",null,"Music"},
+                {"Quiz","das",null,"Quiz"},
+                {"Punkt","der",null,"Point"},
+                {"Schau-spieler","der",null,"Actor"},
+                {"Sprache","die",null,"Lang-uage"},
+                {"Ausland","das",null,"Abroad"},
+                {"Sache","die",null,"Thing"},
+                {"E-Mail","die",null,"E-Mail"},
+                {"Tag","der",null,"Day"},
+                {"Fern-seher","der",null,"TV"},
+                {"Problem","das",null,"Problem"}
             };
             break; 
-            case 3: words = new object[39,3] {
-                {"Internet","das",null},
-                {"Post","die",null},
-                {"Com-puter","der",null},
-                {"Film","der",null},
-                {"Banane","die",null},
-                {"Entschul-digung","die",null},
-                {"Comic","der",null},
-                {"Person","die",null},
-                {"Name","der",null},
-                {"Beispiel","das",null},
-                {"Familien-name","der",null},
-                {"Teil","das",null},
-                {"Handy","das",null},
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schau-spieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fern-seher","der",null},
-                {"Problem","das",null},
-                {"Blume","die",null},
-                {"Fahrrad","das",null},
-                {"Hose","die",null},
-                {"Klavier","das",null},
-                {"Kühl-schrank","der",null},
-                {"Schrank","der",null},
-                {"Spiel","das",null},
-                {"Ding","das",null},
-                {"Brief-marke","die",null},
-                {"Lebens-mittel","das",null},
-                {"Urlaub","der",null},
-                {"Sport","der",null},
-                {"Wohn-ung","die",null}
+            case 3: words = new object[39,4] {
+                {"Internet","das",null,"Internet"},
+                {"Post","die",null,"Post"},
+                {"Com-puter","der",null,"Com-puter"},
+                {"Film","der",null,"Movie"},
+                {"Banane","die",null,"Banana"},
+                {"Entschul-digung","die",null,"Excuse"},
+                {"Comic","der",null,"Comic"},
+                {"Person","die",null,"Person"},
+                {"Name","der",null,"Name"},
+                {"Beispiel","das",null,"Example"},
+                {"Familien-name","der",null,"Last name"},
+                {"Teil","das",null,"Part"},
+                {"Handy","das",null,"Mobile phone"},
+                {"Antwort","die",null,"Answer"},
+                {"Familie","die",null,"Family"},
+                {"Musik","die",null,"Music"},
+                {"Quiz","das",null,"Quiz"},
+                {"Punkt","der",null,"Point"},
+                {"Schau-spieler","der",null,"Actor"},
+                {"Sprache","die",null,"Language"},
+                {"Ausland","das",null,"Abroad"},
+                {"Sache","die",null,"Thing"},
+                {"E-Mail","die",null,"E-Mail"},
+                {"Tag","der",null,"Day"},
+                {"Fern-seher","der",null,"TV"},
+                {"Problem","das",null,"Problem"},
+                {"Blume","die",null,"Flower"},
+                {"Fahrrad","das",null,"Bike"},
+                {"Hose","die",null,"Trousers"},
+                {"Klavier","das",null,"Piano"},
+                {"Kühl-schrank","der",null,"Fridge"},
+                {"Schrank","der",null,"Wardrobe"},
+                {"Spiel","das",null,"Game"},
+                {"Ding","das",null,"Thing"},
+                {"Brief-marke","die",null,"Stamp"},
+                {"Lebens-mittel","das",null,"Groceries"},
+                {"Urlaub","der",null,"Vacation"},
+                {"Sport","der",null,"Sport"},
+                {"Wohn-ung","die",null,"Flat"}
             };
             break;
-            default: words = new object[39,3] {
-                {"Internet","das",null},
-                {"Post","die",null},
-                {"Com-puter","der",null},
-                {"Film","der",null},
-                {"Banane","die",null},
-                {"Entschul-digung","die",null},
-                {"Comic","der",null},
-                {"Person","die",null},
-                {"Name","der",null},
-                {"Beispiel","das",null},
-                {"Familien-name","der",null},
-                {"Teil","das",null},
-                {"Handy","das",null},
-                {"Antwort","die",null},
-                {"Familie","die",null},
-                {"Musik","die",null},
-                {"Quiz","das",null},
-                {"Punkt","der",null},
-                {"Schau-spieler","der",null},
-                {"Sprache","die",null},
-                {"Ausland","das",null},
-                {"Sache","die",null},
-                {"E-Mail","die",null},
-                {"Tag","der",null},
-                {"Fern-seher","der",null},
-                {"Problem","das",null},
-                {"Blume","die",null},
-                {"Fahrrad","das",null},
-                {"Hose","die",null},
-                {"Klavier","das",null},
-                {"Kühl-schrank","der",null},
-                {"Schrank","der",null},
-                {"Spiel","das",null},
-                {"Ding","das",null},
-                {"Brief-marke","die",null},
-                {"Lebens-mittel","das",null},
-                {"Urlaub","der",null},
-                {"Sport","der",null},
-                {"Wohn-ung","die",null}
+            default: words = new object[39,4] {
+                {"Internet","das",null,"Internet"},
+                {"Post","die",null,"Post"},
+                {"Com-puter","der",null,"Com-puter"},
+                {"Film","der",null,"Movie"},
+                {"Banane","die",null,"Banana"},
+                {"Entschul-digung","die",null,"Excuse"},
+                {"Comic","der",null,"Comic"},
+                {"Person","die",null,"Person"},
+                {"Name","der",null,"Name"},
+                {"Beispiel","das",null,"Example"},
+                {"Familien-name","der",null,"Last name"},
+                {"Teil","das",null,"Part"},
+                {"Handy","das",null,"Mobile phone"},
+                {"Antwort","die",null,"Answer"},
+                {"Familie","die",null,"Family"},
+                {"Musik","die",null,"Music"},
+                {"Quiz","das",null,"Quiz"},
+                {"Punkt","der",null,"Point"},
+                {"Schau-spieler","der",null,"Actor"},
+                {"Sprache","die",null,"Lang-uage"},
+                {"Ausland","das",null,"Abroad"},
+                {"Sache","die",null,"Thing"},
+                {"E-Mail","die",null,"E-Mail"},
+                {"Tag","der",null,"Day"},
+                {"Fern-seher","der",null,"TV"},
+                {"Problem","das",null,"Problem"},
+                {"Blume","die",null,"Flower"},
+                {"Fahrrad","das",null,"Bike"},
+                {"Hose","die",null,"Trousers"},
+                {"Klavier","das",null,"Piano"},
+                {"Kühl-schrank","der",null,"Fridge"},
+                {"Schrank","der",null,"Wardrobe"},
+                {"Spiel","das",null,"Game"},
+                {"Ding","das",null,"Thing"},
+                {"Brief-marke","die",null,"Stamp"},
+                {"Lebens-mittel","das",null,"Groceries"},
+                {"Urlaub","der",null,"Vacation"},
+                {"Sport","der",null,"Sport"},
+                {"Wohn-ung","die",null,"Flat"}
             };
             break;
         }
     }
 
-    private void UpdateScore(){
-        scoreText.text = score.ToString("D2"); //format: 00
-        roboText.text = score.ToString("D2");
+    [PunRPC]
+    void UpdateScore(int sc = 0){
+        if(!PhotonNetwork.IsMasterClient)
+            score = sc;
+        scoreText.text = sc.ToString("D2"); //format: 00
+        roboText.text = sc.ToString("D2");
     }
 
     public void MakeSound(){
@@ -274,8 +284,10 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     public void Congrats(int points, string word){ //correct sorting, increase score and write to array
-        score += points;
-        UpdateScore();
+        if(PhotonNetwork.IsMasterClient){
+            score += points;
+            photonView.RPC("UpdateScore", RpcTarget.All, score);
+        }
         destroyedBlubles++;
         for(int i = 0; i < words.GetLength(0); i++) {
             if(String.Equals(words[i,0], word)){
@@ -334,7 +346,7 @@ public class GameController : MonoBehaviourPunCallbacks
             //calculate grid
             int perRow = blublesPerRow*PhotonNetwork.CurrentRoom.PlayerCount;
             float xSteps = (perRow+PhotonNetwork.CurrentRoom.PlayerCount)/perRow;
-            float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 1.1f - xSteps;
+            float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 2 - xSteps;
             float ySteps = 2/(words.GetLength(0)/perRow);
             float y = resultStartPosY;
             float rowCounter = 0; 
@@ -342,19 +354,19 @@ public class GameController : MonoBehaviourPunCallbacks
                 if(rowCounter == perRow) {
                     y = y - ySteps;
                     rowCounter = 0;
-                    x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 1.1f - xSteps;
+                    x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount * 2 - xSteps;
                 }
                 x = x + xSteps;
                 rowCounter++;
                 Vector3 position = new Vector3(Camera.main.transform.position.x + (x-xSteps/2), Camera.main.transform.position.y + (y+ySteps/2), Camera.main.transform.position.z + resultDeviationZ);
                 BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Quaternion.identity, 0).GetComponent<BlubleDraggable>(); 
-                photonView.RPC("SetUpResultBubbles", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, i, (string)words[i,0], (string)words[i,1], words[i,2].ToString());
+                photonView.RPC("SetUpResultBubbles", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, (string)words[i,0], (string)words[i,1], words[i,2].ToString());
             }
         }
     }
 
     [PunRPC]
-    void SetUpResultBubbles(int viewID, int i, string word0, string word1, string word2){
+    void SetUpResultBubbles(int viewID, string word0, string word1, string word2){
         /*if(!PhotonNetwork.IsMasterClient)
             words = word;*/
         BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); //get the current bubble
@@ -363,7 +375,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
         //Show the right result and change bubble color based on correct/wrong sorting
         currentBluble.GetComponentInChildren<TextMeshPro>().text = word1 + " " + word0;
-        Debug.Log(word2);
+        
+        currentBluble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
         if(String.Equals(word2, "True")){
             currentBluble.GetComponent<Renderer>().material = currentBluble.GetGreen();
         } else if (!String.Equals(word2, "False")) {
@@ -428,5 +441,25 @@ public class GameController : MonoBehaviourPunCallbacks
         blubleCounter = 0;
         destroyedBlubles = 0;
         words = null;
+    }
+
+    public void LeaveGame(){
+        if(PhotonNetwork.IsMasterClient){
+            int counter = 0;
+            foreach(object[] word in words){
+                photonView.RPC("UpdateWords", RpcTarget.Others, counter, word[0], word[1], word[2], word[3], words.GetLength(0));
+                counter++;
+            }
+        }
+    }
+
+    [PunRPC]
+    void UpdateWords(int row, object word0, object word1, object word2, object word3, int length){
+        if(row == 0)
+            words = new object[length,4];
+        words[row, 0] = word0;
+        words[row, 1] = word1;
+        words[row, 2] = word2;
+        words[row, 3] = word3;
     }
 }

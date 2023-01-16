@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class RoboMaterialController : MonoBehaviour
 {
-    public static RoboMaterialController Instance; 
-
-    [Tooltip("Material for robo to be set in case of correct sorting")]
-    public Material green;
+    [Tooltip("Material for robo body in case of correct sorting.")][SerializeField]
+    Material green;
     
-    private MeshRenderer myRenderer;
-    private Material orgMaterial; 
-    private Coroutine resetMaterial; //to handle sortings with a short time difference only one coroutine is allowed at a time
+    MeshRenderer myRenderer;
+    Material orgMaterial; 
+    Coroutine resetMaterial; //to handle sortings with short time differences, only one coroutine is allowed at a time
 
     // Start is called before the first frame update
     void Start()
     {
-        Instance = this;
         myRenderer = this.GetComponent<MeshRenderer>();
         orgMaterial = myRenderer.material;
     }
@@ -26,9 +23,9 @@ public class RoboMaterialController : MonoBehaviour
 
     public void RoboChangeMaterial(){
         myRenderer.material = green;
-        if(resetMaterial != null) //if another coroutine exists already, we stop it before starting the new one
+        if(resetMaterial != null) //if a coroutine exists, we stop it before starting a new one
             StopCoroutine(resetMaterial);
-        StartCoroutine(ResetMaterial(1));
+        resetMaterial = StartCoroutine(ResetMaterial(1));
     }
 
     IEnumerator ResetMaterial(int time){

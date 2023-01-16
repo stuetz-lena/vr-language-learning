@@ -61,6 +61,15 @@ MonoBehaviour:
   - MoveAvatarInScene
   - PauseGame
   - SetUpResultBubbles
+  - ChangeMaterial
+  - Hinter
+  - TriggerStandStill
+  - CorrectSorting
+  - OutOfBox
+  - WrongSorting
+  - SortingOrExit
+  - UpdateWords
+  - UpdateScore
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
