@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.XR;
 
-public class ButtonController : MonoBehaviour
+public class ButtonController : MonoBehaviour 
 {
     public XRNode node;
 

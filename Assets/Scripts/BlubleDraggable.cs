@@ -15,6 +15,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using UnityEngine.XR;
 
 // demonstrate of dragging things useing built in EventSystem handlers
 public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.Grabber> 
@@ -58,6 +59,9 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     Color wrongColorStart = new Color(1.0f, 0.0f, 0.0f, 0.8f);
     [Tooltip("End color for particle system effect in case of wrong sorting")][SerializeField]
     Color wrongColorEnd = new Color(0.43f, 0.01f, 0.47f, 0.5f);
+
+    [Tooltip("XR Origin node for button control")][SerializeField]
+    XRNode node; //for UI
     
     float deviationX = 0; //set by initalisation to stay constant
     float initialY = 0; //set by initalisation to stay constant
@@ -90,6 +94,12 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             }
             //Rotate text to camera
             this.GetComponentInChildren<TextMeshPro>().transform.rotation = Camera.main.transform.rotation;
+        }
+        UnityEngine.XR.Interaction.Toolkit.InputHelpers.IsPressed(InputDevices.GetDeviceAtXRNode(node), UnityEngine.XR.Interaction.Toolkit.InputHelpers.Button.SecondaryButton, out bool secondaryButton, 0.5f);
+        if (secondaryButton && isDragged)
+        {
+            Debug.Log("secondary with bubble");
+            ShowHint();
         }
     }
 
@@ -209,7 +219,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 } 
             }
         
-            if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy bubbles if they hit the walls
+            if(other.collider.tag == "Floor_end") { //destroy bubbles if they hit the walls
                 if(!PhotonNetwork.IsMasterClient){
                     photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 } else {

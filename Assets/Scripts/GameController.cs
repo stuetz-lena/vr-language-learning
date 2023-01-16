@@ -40,7 +40,7 @@ public class GameController : MonoBehaviourPunCallbacks
     [Tooltip("AudioSource to be played during result view.")][SerializeField]
     AudioSource final;
 
-    TextMeshPro roboText; //text element on robo
+    TextMeshPro roboText; //text element on robo, set via NetworkManager
     int score = 0;
     float startTime = 0;
     float pauseStart = 0;
@@ -58,10 +58,10 @@ public class GameController : MonoBehaviourPunCallbacks
 
     // Update is called once per frame
     void Update(){ 
-        //update the time if a text element is available, the start time was set, the game is not finished yet or currently paused
+        //update the timer if the text element is available, the start time was set, the game is not finished or currently paused
         if(timeText != null && startTime != 0 && (destroyedBlubles <  words.GetLength(0)) && !NetworkManager.Instance.GetIsPaused()){
-            TimeSpan t = TimeSpan.FromSeconds(Time.time - startTime - pauseTime); //substract start time (after pushing the button) and pause time from the current time
-            if(timeText.text != string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds)) //change in UI if necessary
+            TimeSpan t = TimeSpan.FromSeconds(Time.time - startTime - pauseTime); //substract start time (taken at pushing the button) and pause time from current time
+            if(!timeText.text.Equals(string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds))) //change only in UI if necessary
                 timeText.text = string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds);
         }
     }
@@ -70,7 +70,7 @@ public class GameController : MonoBehaviourPunCallbacks
         return score;
     }
 
-    public String GetTranslation(String basis){
+    public string GetTranslation(string basis){
         for(int i = 0; i < words.GetLength(0); i++) {
             if(basis.Equals((string)words[i,0])){
                 return (string)words[i,3];
@@ -87,7 +87,7 @@ public class GameController : MonoBehaviourPunCallbacks
         startTime = t;
     }
 
-    public void SetWordStore(){ //adjust word amout to player amout
+    public void SetWordStore(){ //adjust word amount to player amount
         switch(PhotonNetwork.CurrentRoom.PlayerCount) {
             case 1: words = new object[13,4] {
                 {"Antwort","die",null,"Answer"},
@@ -127,7 +127,7 @@ public class GameController : MonoBehaviourPunCallbacks
                 {"Schau-spieler","der",null,"Actor"},
                 {"Sprache","die",null,"Lang-uage"},
                 {"Ausland","das",null,"Abroad"},
-                {"Sache","die",null,"Thing"},
+                {"Sache","die",null,"Matter"},
                 {"E-Mail","die",null,"E-Mail"},
                 {"Tag","der",null,"Day"},
                 {"Fern-seher","der",null,"TV"},
@@ -156,7 +156,7 @@ public class GameController : MonoBehaviourPunCallbacks
                 {"Schau-spieler","der",null,"Actor"},
                 {"Sprache","die",null,"Language"},
                 {"Ausland","das",null,"Abroad"},
-                {"Sache","die",null,"Thing"},
+                {"Sache","die",null,"Matter"},
                 {"E-Mail","die",null,"E-Mail"},
                 {"Tag","der",null,"Day"},
                 {"Fern-seher","der",null,"TV"},
@@ -198,7 +198,7 @@ public class GameController : MonoBehaviourPunCallbacks
                 {"Schau-spieler","der",null,"Actor"},
                 {"Sprache","die",null,"Lang-uage"},
                 {"Ausland","das",null,"Abroad"},
-                {"Sache","die",null,"Thing"},
+                {"Sache","die",null,"Matter"},
                 {"E-Mail","die",null,"E-Mail"},
                 {"Tag","der",null,"Day"},
                 {"Fern-seher","der",null,"TV"},
@@ -243,33 +243,34 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     void CreateBluble() { //MasterONLYFunction
-        int index = UnityEngine.Random.Range(0, words.GetLength(0)); //Randomize word order
+        int index = UnityEngine.Random.Range(0, words.GetLength(0)); //randomize word order
         if(words[index,2] == null) { //if the bubble does not exist yet
             //Create new bubble
-            float deviationX = UnityEngine.Random.Range(-1 * deviationBaseX * PhotonNetwork.CurrentRoom.PlayerCount, deviationBaseX*PhotonNetwork.CurrentRoom.PlayerCount); //spawn breadth depends on player amount
+            float deviationX = UnityEngine.Random.Range(-1 * deviationBaseX * PhotonNetwork.CurrentRoom.PlayerCount, deviationBaseX * PhotonNetwork.CurrentRoom.PlayerCount); //spawn breadth depends on player amount
             float initalY = Camera.main.transform.position.y + UnityEngine.Random.Range(deviationYFrom, deviationYTo);
             Vector3 position = new Vector3(Camera.main.transform.position.x + deviationX, initalY, Camera.main.transform.position.z + blubleDeviationZ);
             BlubleDraggable currentBluble = PhotonNetwork.InstantiateSceneObject("bluble", position, Camera.main.transform.rotation, 0).GetComponent<BlubleDraggable>();
             photonView.RPC("SetUpBuble", RpcTarget.All, currentBluble.GetComponent<PhotonView>().ViewID, index, initalY, deviationX);
             
-            //Initiate next bluble
-            blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); //time to wait for a new bubble is depends on player amount
-        } else if(blubleCounter < words.GetLength(0)) { //if the bubble was already created, try a new one
+            //Initiate next bubble
+            blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); //time to wait for next bubble depends on player amount
+        } else if(blubleCounter < words.GetLength(0)) { //if the bubble was already created, start a new try
             CreateBluble();
         }
     } 
 
     [PunRPC]
     void SetUpBuble(int viewID, int index, float y, float x){
+        //save bubble generation
         blubleCounter++; 
-        words[index,2] = false; //not sorted yet
-
-        BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); //get the current bubble
+        words[index,2] = false; //not sorted in yet
+        //get the current bubble
+        BlubleDraggable currentBluble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>(); 
 
         currentBluble.transform.parent = this.transform;
         currentBluble.gameObject.name = "Bluble " + (string)words[index,0]; //name in scene
-
-        currentBluble.SetInitialY(y); //make sure the random factors stay constant
+        //make sure the random factors stay constant
+        currentBluble.SetInitialY(y); 
         currentBluble.SetDeviationX(x);
 
         currentBluble.GetComponentInChildren<TextMeshPro>().text = (string)words[index,0]; //set text
@@ -283,18 +284,20 @@ public class GameController : MonoBehaviourPunCallbacks
         currentBluble.SetWordSource(audio);
     }
 
-    public void Congrats(int points, string word){ //correct sorting, increase score and write to array
+    public void Congrats(int points, string word){ 
+        //increase score
         if(PhotonNetwork.IsMasterClient){
             score += points;
             photonView.RPC("UpdateScore", RpcTarget.All, score);
         }
-        destroyedBlubles++;
+        //save the correct sorting
         for(int i = 0; i < words.GetLength(0); i++) {
-            if(String.Equals(words[i,0], word)){
-                words[i,2] = true; //save the correct sorting
+            if(word.Equals(words[i,0])){
+                words[i,2] = true;
                 break;
             }
         }
+        destroyedBlubles++;
         CheckForTie();
     }
 
