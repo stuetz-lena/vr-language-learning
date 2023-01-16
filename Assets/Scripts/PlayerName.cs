@@ -14,7 +14,8 @@ public class PlayerName : MonoBehaviourPun, IPunObservable
     }
 
     void Update(){
-        this.gameObject.transform.rotation = Camera.main.transform.rotation;
+        //rotate player name text to other player
+        transform.Find("NameUI").gameObject.transform.rotation = Camera.main.transform.rotation;
     }
 
     void ChangeMyName(string name)
