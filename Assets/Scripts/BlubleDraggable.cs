@@ -455,9 +455,6 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         switch (eventData.button)
         {
             case PointerEventData.InputButton.Middle:
-                Debug.Log("middle");
-                distance = 0;
-                break; //Delete again
             case PointerEventData.InputButton.Right:
                 distance = Mathf.Min(hitResult.distance, initGrabDistance);
                 break;

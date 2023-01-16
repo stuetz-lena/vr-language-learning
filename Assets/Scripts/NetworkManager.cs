@@ -58,7 +58,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster(){
         Debug.Log("Verbunden zum Server.");
-        PhotonNetwork.CreateRoom("bluble", ROOM_OPTIONS, null);   
+        PhotonNetwork.CreateRoom("bluble1", ROOM_OPTIONS, null);   
     }
 
     public override void OnJoinedRoom(){
@@ -82,7 +82,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void UserEntersGameMode(){ //called after tutorial
         if(!isPaused){ //if we are not coming from reviewing the tutorial we are at the start
             if(!PhotonNetwork.InRoom)
-                PhotonNetwork.JoinRoom("bluble");
+                PhotonNetwork.JoinRoom("bluble1");
             StartCoroutine(SetUpGame()); 
         } else { //otherwise we need to go back to the pause menu
             TriggerGameObjects(true);
