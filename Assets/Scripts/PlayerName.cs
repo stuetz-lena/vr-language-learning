@@ -13,6 +13,10 @@ public class PlayerName : MonoBehaviourPun, IPunObservable
         }
     }
 
+    void Update(){
+        this.gameObject.transform.rotation = Camera.main.transform.rotation;
+    }
+
     void ChangeMyName(string name)
     {
         this.gameObject.name = name;
