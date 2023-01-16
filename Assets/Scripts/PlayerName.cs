@@ -9,7 +9,7 @@ public class PlayerName : MonoBehaviourPun, IPunObservable
     {
         if (photonView.IsMine)
         {
-            ChangeMyName("Teilnehmer-Nr.:" + PhotonNetwork.LocalPlayer.ActorNumber);
+            ChangeMyName("Player: " + PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
 

@@ -227,7 +227,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 5311104267576574204}
@@ -272,34 +272,10 @@ MonoBehaviour:
         m_CallState: 2
   m_beforeRelease:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5311104267576574207}
-        m_TargetAssemblyTypeName: Photon.Pun.PhotonView, PhotonUnityNetworking
-        m_MethodName: RequestOwnership
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_onDrop:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5311104267576574207}
-        m_TargetAssemblyTypeName: Photon.Pun.PhotonView, PhotonUnityNetworking
-        m_MethodName: RequestOwnership
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &5311104267029610691
 GameObject:
   m_ObjectHideFlags: 0

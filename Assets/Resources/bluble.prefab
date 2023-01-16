@@ -456,7 +456,7 @@ MonoBehaviour:
   correctColorEnd: {r: 0.43, g: 0.01, b: 0.47, a: 0.5}
   wrongColorStart: {r: 1, g: 0, b: 0, a: 0.8}
   wrongColorEnd: {r: 0.43, g: 0.01, b: 0.47, a: 0.5}
-  node: 0
+  node: 5
   m_initGrabDistance: 0.5
   m_followingDuration: 0.04
   m_overrideMaxAngularVelocity: 1

@@ -96,7 +96,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             this.GetComponentInChildren<TextMeshPro>().transform.rotation = Camera.main.transform.rotation;
         }
         UnityEngine.XR.Interaction.Toolkit.InputHelpers.IsPressed(InputDevices.GetDeviceAtXRNode(node), UnityEngine.XR.Interaction.Toolkit.InputHelpers.Button.SecondaryButton, out bool secondaryButton, 0.5f);
-        if (secondaryButton && isDragged)
+        if (secondaryButton && isGrabbed && !hintUsed)
         {
             Debug.Log("secondary with bubble");
             ShowHint();
@@ -209,7 +209,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
                 if(!PhotonNetwork.IsMasterClient){
                     photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } else {
-                    SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
+                    SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 } 
             } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
                 if(!PhotonNetwork.IsMasterClient){
@@ -221,7 +221,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         
             if(other.collider.tag == "Floor_end") { //destroy bubbles if they hit the walls
                 if(!PhotonNetwork.IsMasterClient){
-                    photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
+                    photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } else {
                     SortingOrExit(0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 }  
