@@ -358,10 +358,10 @@ MonoBehaviour:
   bodyMovement: 1
   circleMovement: 0
   headMovement: 1
-  bodyMovementSpeed: 3
+  bspeed: 0.4
   bfrom: -20
   bto: 20
-  headMovementSpeed: 3
+  hspeed: 0.3
   hfrom: -90
   hto: -75
   fSpeed: 0.25

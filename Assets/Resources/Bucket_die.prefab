@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6220059869214657030}
   - component: {fileID: 6998444934026244002}
   - component: {fileID: 6263155932792659970}
-  - component: {fileID: 4088625260397930121}
   - component: {fileID: 8161317896122328311}
   m_Layer: 5
   m_Name: Canvas
@@ -85,23 +84,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &4088625260397930121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 315807085472334182}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 0
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &8161317896122328311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,7 +314,19 @@ MonoBehaviour:
   m_maxStretchScale: 1
   m_afterGrabbed:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8769439658639131571}
+        m_TargetAssemblyTypeName: Photon.Pun.PhotonView, PhotonUnityNetworking
+        m_MethodName: RequestOwnership
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_beforeRelease:
     m_PersistentCalls:
       m_Calls: []
@@ -370,8 +364,8 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
+  Synchronization: 1
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 8769439658639131568}

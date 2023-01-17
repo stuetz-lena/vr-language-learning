@@ -17,7 +17,7 @@ public class PhotonStatus : MonoBehaviour
 			status += "-------------------------------------------------------\n";
 			status += "Player Nr.: " + PhotonNetwork.LocalPlayer.ActorNumber + "\n";
 			status += "IsMasterClient: " + PhotonNetwork.IsMasterClient + "\n";
-			status += "Score: " + GameController.Instance.GetScore().ToString("D2"); //added Score
+			status += "Score: " + GameController.Instance.GetScore().ToString("D2"); //added score
 		}
 		GUI.TextField(new Rect(10, 10, 220, 125), status);
 	}

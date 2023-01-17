@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class RigPosition : MonoBehaviour
 {
-    public Transform XRRigPosition;
 
-    void Start()
-    {
+    void Start(){
         //XRRigPosition.transform.position = new Vector3(Random.Range(-6, 6), 0.1f, Random.Range(-6, 6));
-        XRRigPosition.transform.position = new Vector3(Random.Range(-6, 6), 0.25f,-14.5f);
+    }
+
+    public void AdjustPosition(int playerNr){
+        //Set start position in game mode depending on playerNr
+        this.transform.position = new Vector3(-1 + playerNr, this.transform.position.y, this.transform.position.z);
     }
 }

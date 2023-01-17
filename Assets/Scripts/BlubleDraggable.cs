@@ -14,6 +14,8 @@ using GrabberPool = HTC.UnityPlugin.Utility.ObjectPool<BlubleDraggable.Grabber>;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 // demonstrate of dragging things useing built in EventSystem handlers
 public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.Grabber> 
@@ -23,182 +25,302 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
     , IEndDragHandler
 {
     //---- added Code ----
-    [Tooltip("Time factor for bubble constant movement forwards")]
-    public float timeFactor = 1;
-    [Tooltip("Time factor for floating")]
-    public float fSpeed = 0.25f;
+    [Tooltip("Time factor for bluble constant movement forwards")][SerializeField]
+    float timeFactor = 1;
+    [Tooltip("Time factor for floating")][SerializeField]
+    float fSpeed = 0.25f;
 
-    [Tooltip("Audio to be played in case of bluble emerging")]
-    public AudioSource emergingBluble;
-    [Tooltip("Audio to be played in case of wrong sorting")]
-    public AudioSource fail; 
-    [Tooltip("Audio to be played in case of correct sorting")]
-    public AudioSource success;
-    [Tooltip("Audio to be played in case of bluble disappearing")]
-    public AudioSource pop; 
-    [Tooltip("Material for bluble to be set in case of correct sorting")]
-    public Material green;
-    [Tooltip("Material for bluble to be set in case of wrong sorting")]
-    public Material red;
+    [Tooltip("Audio to be played in case of bluble emerging")][SerializeField]
+    AudioSource emerging;
+    [Tooltip("Audio to be played in case of wrong sorting")][SerializeField]
+    AudioSource fail; 
+    [Tooltip("Audio to be played in case of correct sorting")][SerializeField]
+    AudioSource success;
+    [Tooltip("Audio to be played in case of bluble disappearing")][SerializeField]
+    AudioSource pop; 
+    [Tooltip("Audio to be played when hint is used")][SerializeField]
+    AudioSource hint;
+
+    [Tooltip("Material for bluble in case of correct sorting (within results)")][SerializeField]
+    Material green;
+    [Tooltip("Material for bluble in case of wrong sorting (within results)")][SerializeField]
+    Material red;
+    [Tooltip("Selection material for player 1")][SerializeField]
+    Material player1Material;
+    [Tooltip("Selection material for player 2")][SerializeField]
+    Material player2Material;
+    [Tooltip("Selection material for player 3")][SerializeField]
+    Material player3Material;
+    [Tooltip("Selection material for player 4")][SerializeField]
+    Material player4Material;
+    [Tooltip("Start color for particle system effect in case of correct sorting")][SerializeField]
+    Color correctColorStart = new Color(0.0f, 1.0f, 0.0f, 0.8f); 
+    [Tooltip("End color for particle system effect in case of correct sorting")][SerializeField]
+    Color correctColorEnd = new Color(0.43f, 0.01f, 0.47f, 0.5f);
+    [Tooltip("Start color for particle system effect in case of wrong sorting")][SerializeField]
+    Color wrongColorStart = new Color(1.0f, 0.0f, 0.0f, 0.8f);
+    [Tooltip("End color for particle system effect in case of wrong sorting")][SerializeField]
+    Color wrongColorEnd = new Color(0.43f, 0.01f, 0.47f, 0.5f);
+
+    [Tooltip("XR Origin node for button control")][SerializeField]
+    XRNode node; //for UI
     
-    private float time = 0; //for constant movement
-    private float deviationX = 0; //set by initalisation to stay constant
-    private float initialY = 0; //set by initalisation to stay constant
-    private bool isHit = false; //if the bluble was already sorted but still exists
-    private AudioSource wordSource = null; //audio for the spoken vocabulary, set by initialisation
+    float deviationX = 0; //set by initalisation to stay constant
+    float initialY = 0; //set by initalisation to stay constant
+    AudioSource wordSource = null; //audio for the vocabulary, set by initialisation
+    Material orgMaterial;
+    String orgText = "";
+
+    float timeCounter = 0; //for constant movement
+    bool isHit = false; //if the bubble was already sorted but still exists for playing sounds and effects
+    bool standStill = false; //if the bubble was placed somewhere or handed over
+    bool hintUsed = false; //if the hint was already used
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
+        if(emerging)
+            emerging.Play();
+        orgMaterial = this.GetComponent<Renderer>().material;
+        orgText = this.GetComponentInChildren<TextMeshPro>().text;
+        this.GetComponentInChildren<Canvas>().worldCamera = Camera.main;
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if(PhotonNetwork.IsMasterClient){ //only the master client should control the bubbles
-            if(!isHit && !isDragged && !GameController.Instance.GetIsPaused()){ //bubble should not forcefully move if it is already sorted, currently dragged or the game is paused
-                time += 0.02f;
-                float y = Mathf.Sin(time) * fSpeed + initialY; //move up and down depending on time
-                transform.position = new Vector3(deviationX + Camera.main.transform.position.x, y,  -1 * timeFactor * Time.deltaTime + transform.position.z); //move forwards towards the camera
+    void Update(){
+        if(!isHit && !isDragged && !standStill && !NetworkManager.Instance.GetIsPaused()){ 
+            //bubble should not forcefully move if it is already sorted, currently dragged, handed over or the game is paused
+            timeCounter += 0.02f; //to enable clients to take over the master role without a drastic position change, counter needs to be increased on all
+            if(PhotonNetwork.IsMasterClient){ //only the master should actually move the bubbles
+                float y = Mathf.Sin(timeCounter)*fSpeed + initialY; //move up and down depending on time
+                transform.position = new Vector3(Camera.main.transform.position.x + deviationX, y, transform.position.z - timeFactor*Time.deltaTime); //move towards the camera
             }
             //Rotate text to camera
             this.GetComponentInChildren<TextMeshPro>().transform.rotation = Camera.main.transform.rotation;
+        }
+        UnityEngine.XR.Interaction.Toolkit.InputHelpers.IsPressed(InputDevices.GetDeviceAtXRNode(node), UnityEngine.XR.Interaction.Toolkit.InputHelpers.Button.SecondaryButton, out bool secondaryButton, 0.5f);
+        if (secondaryButton && isGrabbed && !hintUsed){
+            //show hint once when the bubble is grabbed and the secondary button is pressed
+            ShowHint();
         }
     }
 
     public void SetDeviationX(float deviation){
         deviationX = deviation;
     }
+
     public void SetInitialY(float initial){
         initialY = initial;
     }
 
-    public void PlayAudioText(){
-        Component[] audios = this.GetComponents(typeof(AudioSource)); //Searching for the child audio component containing the vocabulary on the bluble and play it
-        for(int i = 0; i < audios.Length; i++) {
-            AudioSource wordAudio = audios[i] as AudioSource;
-            //Debug.Log(wordAudio.clip.ToString() + " " + this.GetComponentInChildren<TextMeshPro>().text);
-            if(wordAudio.clip.ToString().Contains(this.GetComponentInChildren<TextMeshPro>().text)){
-                wordAudio.Play();
-                wordSource = wordAudio;
-            }
-        }
+    public void SetWordSource(AudioSource audio){
+        wordSource = audio;
     }
 
-    private void OnCollisionEnter(Collision other){
-        if(!isHit){ //if the bubble was already sorted in, do not act again 
-            Collider myCollider = gameObject.GetComponent<Collider>();
-            Renderer myRenderer = gameObject.GetComponent<Renderer>();
-            if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
-                Debug.Log("Richtig!");
-                //PhotonView photonView = this.GetComponent<PhotonView>();
-                //photonView.RPC("Successful", RpcTarget.All, photonView.ViewID); 
-                isHit = true; //save sorting
-                if(wordSource){ //if word audio is currently played, stop it
-                    wordSource.Stop();
-                }
-                if(pop) //play sounds
-                    pop.Play();
-                if(success) {
-                    success.Play();
-                }
-                //myRenderer.material = green;
-                RoboMaterialController rob = GameController.Instance.GetRobo().GetComponentInChildren<RoboMaterialController>();
-                rob.RoboChangeMaterial(); //let robo change body color
+    public Material GetGreen(){
+        return green;
+    }
 
-                ParticleSystem ps = this.GetComponent<ParticleSystem>();
-                if(ps){ //play particle system
-                    ParticleSystem.ColorOverLifetimeModule colorModule = ps.colorOverLifetime;
-                    colorModule.color = new ParticleSystem.MinMaxGradient(new Color(0.0f, 1.0f, 0.0f, 0.8f), new Color(0.43f, 0.01f, 0.47f, 0.5f));
-                    ps.Play(); 
-                    this.GetComponent<Renderer>().enabled = false; //hide bubble & text
-                    this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
-                }
-                PhotonView photonView = GameController.Instance.GetComponent<PhotonView>();
-                photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
-                //GameController.Instance.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text); //scoreIncrease
-                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
-                this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject,success.clip.length); //wait until sound is played*/
-            }
-            
-            if ((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("das")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("die"))){
-                isHit = true;
-                if(wordSource){
-                    wordSource.Stop();
-                }
-                if(pop)
-                    pop.Play();
-                if(fail) {
-                    fail.Play();
-                }
-                //myRenderer.material = red;
-                ParticleSystem ps = this.GetComponent<ParticleSystem>();
-                if(ps){
-                    ParticleSystem.ColorOverLifetimeModule colorModule = ps.colorOverLifetime;
-                    colorModule.color = new ParticleSystem.MinMaxGradient(new Color(1.0f, 0.0f, 0.0f, 0.8f), new Color(0.43f, 0.01f, 0.47f, 0.5f));
-                    ps.Play(); 
-                    myRenderer.enabled = false;
-                    //yield return new WaitForSeconds(ps.main.duration);
-                    this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
-                }
-                Debug.Log("Leider falsch");
-                GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag); //save wrong answer
-                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
-                this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject, fail.clip.length-1); //sound was a bit to long in the end, adjust for other sound or edit sound 
-            } //PhotonNetwork.Destroy needed
+    public Material GetRed(){
+        return red;
+    }
+
+    public void Stopper(){ 
+        //triggered via drop event, stop handed over bubble from constant movement
+        this.GetComponent<PhotonView>().RPC("TriggerStandStill", RpcTarget.All, this.GetComponent<PhotonView>().ViewID, true);
+    }
+
+    [PunRPC]
+    void TriggerStandStill(int viewID, bool value){ 
+        PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>().standStill = value;
+    }
+
+    public void ShowHint(){ //triggered via button click
+        this.GetComponent<PhotonView>().RPC("Hinter", RpcTarget.All, this.GetComponent<PhotonView>().ViewID);
+    }
+
+    [PunRPC]
+    void Hinter(int viewID){
+        BlubleDraggable currentBlubble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>();
+        currentBlubble.hintUsed = true; //save usage for score calculation
+        if(hint)
+            hint.Play();
         
-            if(other.collider.tag == "Floor_end" || other.collider.tag == "Player") { //destroy blubles if the hit the player
-                isHit = true;
-                if(wordSource){
-                    wordSource.Stop();
-                }
-                if(pop)
-                    pop.Play();
-                ParticleSystem ps = this.GetComponent<ParticleSystem>();
-                if(ps){
-                    ps.Play(); 
-                }
-                myRenderer.enabled = false;
-                this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
-                GameController.Instance.Fail(this.GetComponentInChildren<TextMeshPro>().text); //save destroyed bluble
-                int LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
-                this.gameObject.layer = LayerIgnoreRaycast;
-                Destroy(this.gameObject, pop.clip.length);
+        currentBlubble.GetComponentInChildren<TextMeshPro>().text = GameController.Instance.GetTranslation(currentBlubble.GetComponentInChildren<TextMeshPro>().text);
+        if(currentBlubble.GetComponentInChildren<Canvas>()) //hide button canvas to restrict hint usage to once
+            currentBlubble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
+        StartCoroutine(HideHint(2, viewID));
+    }
+
+    IEnumerator HideHint(float time, int viewID){
+        yield return new WaitForSeconds(time); 
+        BlubleDraggable currentBlubble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>();
+        currentBlubble.GetComponentInChildren<TextMeshPro>().text = orgText; //reset text
+    }
+
+    public void ChangeMaterialOnSelection(){ 
+        //triggered on after grabbed and drop to visalize selection by player
+        this.GetComponent<PhotonView>().RPC("ChangeMaterial", RpcTarget.All, this.GetComponent<PhotonView>().ViewID, PhotonNetwork.LocalPlayer.ActorNumber);
+    }
+
+    [PunRPC]
+    void ChangeMaterial(int viewID, int actorNr){
+        Renderer myRenderer = PhotonView.Find(viewID).gameObject.GetComponent<Renderer>();
+        if(myRenderer.material != orgMaterial){
+            myRenderer.material = orgMaterial; //reset material
+        } else {
+            switch(actorNr){ //change material depending on playerNr
+                case 1: myRenderer.material = player1Material;
+                    break;
+                case 2: myRenderer.material = player2Material;
+                    break;
+                case 3: myRenderer.material = player3Material;
+                    break;
+                case 4: myRenderer.material = player4Material;
+                    break;
+                default: myRenderer.material = player1Material;
+                    break;
             }
         }
     }
 
-    /*[PunRPC] //IEnumerator
-    public void Successful(int viewID){
-        isHit = true; //save sorting
-        if(wordSource){ //if word audio is currently played, stop it
-            wordSource.Stop();
+    public void PlayAudioText(){ 
+        //triggered via after grabbed event to play vocabulary audio
+        if(wordSource != null){
+            wordSource.Play();
+        } else {
+            //searching for the child audio component containing the vocabulary on the bubble
+            Component[] audios = this.GetComponents(typeof(AudioSource)); 
+            for(int i = 0; i < audios.Length; i++) {
+                AudioSource wordAudio = audios[i] as AudioSource;
+                if(wordAudio.clip.ToString().Contains(this.GetComponentInChildren<TextMeshPro>().text) || wordAudio.clip.ToString().Contains(orgText)){
+                    wordSource = wordAudio;
+                    PlayAudioText();
+                }
+            }
         }
-        if(pop) //play sounds
-            pop.Play();
-        if(success) {
-            success.Play();
-        }
-        //myRenderer.material = green;
-        RoboMaterialController rob = GameController.Instance.GetRobo().GetComponentInChildren<RoboMaterialController>();
-        rob.RoboChangeMaterial(); //let robo change body color
+    }
 
-        ParticleSystem ps = this.GetComponent<ParticleSystem>();
-        if(ps){ //play particle system
+    void OnCollisionEnter(Collision other){
+        if(!isHit && orgText != "Blase" && orgText != ""){ //if the bubble was already handled, do not act again; if the bubble was not set up correctly do not act to avoid errors
+            if(orgText != "")
+                GetComponentInChildren<TextMeshPro>().text = orgText; //reset text in case resetter was not yet called before sorting
+            Collider myCollider = gameObject.GetComponent<Collider>();
+            PhotonView photonView = this.GetComponent<PhotonView>();
+
+            if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
+                if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
+                    photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
+                    SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
+                } 
+            } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
+                    photonView.RPC("SortingOrExit", RpcTarget.All, 2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
+                    SortingOrExit(2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
+                } 
+            }
+        
+            if(other.collider.tag == "Floor_end") { //destroy bubbles if they hit the walls
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
+                    photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
+                    SortingOrExit(0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
+                }  
+            }
+
+            if(other.collider.tag == "Player") { //stop bubble if it hits a player or is pushed on them
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
+                    photonView.RPC("TriggerStandStill", RpcTarget.All, this.GetComponent<PhotonView>().ViewID, true);
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
+                    TriggerStandStill(this.GetComponent<PhotonView>().ViewID, true);
+                }  
+            }
+        }
+    }
+
+    [PunRPC]
+    void SortingOrExit(int what, int viewID, string word, string bucket = ""){
+        BlubleDraggable currentBlubble = PhotonView.Find(viewID).gameObject.GetComponent<BlubleDraggable>();
+        currentBlubble.isHit = true; //save sorting or exit
+        if(what == 1)
+            Debug.Log("Correct solution given for " + word);
+        if(what == 2)
+            Debug.Log("Wrong solution given for " + word);
+
+        //play sounds
+        if(currentBlubble.wordSource) //if the word audio is currently played, stop it
+            currentBlubble.wordSource.Stop();
+        if(currentBlubble.pop) 
+            currentBlubble.pop.Play();
+        if(what == 1)
+            if(currentBlubble.success)
+                currentBlubble.success.Play();
+        if(what == 2)
+            if(currentBlubble.fail)
+                currentBlubble.fail.Play();
+
+        if(what == 1) //let robo change body color in case of correct sorting
+            NetworkManager.Instance.RoboChangeMaterial(); 
+
+        //play particle system
+        ParticleSystem ps = currentBlubble.GetComponent<ParticleSystem>();
+        if(ps){ 
             ParticleSystem.ColorOverLifetimeModule colorModule = ps.colorOverLifetime;
-            colorModule.color = new ParticleSystem.MinMaxGradient(new Color(0.0f, 1.0f, 0.0f, 0.8f), new Color(0.43f, 0.01f, 0.47f, 0.5f));
+            if(what == 1) //adjust effect color based on sorting result  
+                colorModule.color = new ParticleSystem.MinMaxGradient(currentBlubble.correctColorStart, currentBlubble.correctColorEnd);
+            if(what == 2) //adjust effect color based on sorting result  
+                colorModule.color = new ParticleSystem.MinMaxGradient(currentBlubble.wrongColorStart, currentBlubble.wrongColorEnd);
             ps.Play(); 
-            this.GetComponent<Renderer>().enabled = false; //hide bubble & text
-            this.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
+            //hide bubble & text after explosion
+            currentBlubble.GetComponent<Renderer>().enabled = false; 
+            currentBlubble.GetComponentInChildren<TextMeshPro>().GetComponent<Renderer>().enabled = false;
+            if(currentBlubble.GetComponentInChildren<Canvas>())
+                currentBlubble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
         }
-        //PhotonView photonView = GameController.Instance.GetComponent<PhotonView>();
-        //photonView.RPC("Congrats", RpcTarget.All, 2, this.GetComponentInChildren<TextMeshPro>().text);
-        GameController.Instance.Congrats(2, this.GetComponentInChildren<TextMeshPro>().text); //scoreIncrease
-        Destroy(this.gameObject,success.clip.length); //wait until sound is played
-    }*/
 
+        //report sorting or exit
+        switch(what){
+            case 0: GameController.Instance.Fail(word);
+                break; 
+            case 1: //trigger score increase & save correct answer
+                    if(currentBlubble.hintUsed){
+                        GameController.Instance.Congrats(1, word); //if hint was used add one point to the score
+                    } else {
+                        GameController.Instance.Congrats(2, word); //if hint wasn't used add two points to the score
+                    }
+                break; 
+            case 2: GameController.Instance.Fail(word, bucket);
+                break;
+            default: GameController.Instance.Fail(word);
+                break;
+        }
+
+        //disable & destroy bubble
+        currentBlubble.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast"); //disable selection
+        currentBlubble.gameObject.GetComponent<Collider>().enabled = false; //disable events
+        if(PhotonNetwork.IsMasterClient){
+            switch(what){
+                case 0: StartCoroutine(DestroyBluble(currentBlubble.pop.clip.length, viewID));
+                    break; 
+                case 1: StartCoroutine(DestroyBluble(currentBlubble.success.clip.length, viewID));
+                    break; 
+                case 2: StartCoroutine(DestroyBluble(currentBlubble.fail.clip.length-1, viewID)); //sound was a bit too long in the end, adjust for other sound or edit source
+                    break; 
+                default: StartCoroutine(DestroyBluble(currentBlubble.pop.clip.length, viewID));
+                    break;
+            } 
+        }
+    }
+
+    IEnumerator DestroyBluble(float time, int viewID){ //MasterONLYfunction
+        yield return new WaitForSeconds(time); //wait for audio clip end
+        if(!this.GetComponent<PhotonView>().IsMine) 
+            //change owner if necessary
+            PhotonView.Find(viewID).TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+        if(this.GetComponent<PhotonView>().IsMine)
+            PhotonNetwork.Destroy(PhotonView.Find(viewID).gameObject);
+    }
     //---- addedCodeEnd ------
 
      [Serializable]
@@ -324,10 +446,6 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         base.Awake();
 
         afterGrabberGrabbed += () => m_afterGrabbed.Invoke(this);
-
-        //added Code to play word audio on grabbing of the bubble
-        afterGrabberGrabbed += () => PlayAudioText();
-
         beforeGrabberReleased += () => m_beforeRelease.Invoke(this);
         onGrabberDrop += () => m_onDrop.Invoke(this);
     }
