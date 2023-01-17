@@ -351,8 +351,8 @@ public class GameController : MonoBehaviourPunCallbacks
         //Show bubbles again, spawned only by master
         if(PhotonNetwork.IsMasterClient){
             //calculate grid
-            if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
-                resultStartPosX -= 1.3f;
+            if(PhotonNetwork.CurrentRoom.PlayerCount > 1)
+                resultStartPosX -= 0.65f*PhotonNetwork.CurrentRoom.PlayerCount;
             int perRow = blublesPerRow*PhotonNetwork.CurrentRoom.PlayerCount;
             float xSteps = (perRow+PhotonNetwork.CurrentRoom.PlayerCount)/perRow;
             float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount*2 - xSteps;

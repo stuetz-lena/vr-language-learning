@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.031356305, g: 0.009549969, b: 0.0132265445, a: 1}
+  m_IndirectSpecularColor: {r: 0.031298175, g: 0.009539795, b: 0.013168814, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3592,7 +3592,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &461585635
 Canvas:
   m_ObjectHideFlags: 0
@@ -12245,7 +12245,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 500, y: 500, z: 500, w: 500}
+  m_RaycastPadding: {x: 150, y: 150, z: 150, w: 150}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
