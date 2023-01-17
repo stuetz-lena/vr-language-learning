@@ -286,10 +286,6 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public void Congrats(int points, string word){ 
         //increase score
-        /*if(PhotonNetwork.IsMasterClient){
-            score += points;
-            photonView.RPC("UpdateScore", RpcTarget.All, score);
-        }*/
         score += points;
         UpdateScore(score);
         //save the correct sorting
@@ -351,9 +347,9 @@ public class GameController : MonoBehaviourPunCallbacks
         //Show bubbles again, spawned only by master
         if(PhotonNetwork.IsMasterClient){
             //calculate grid
+            int perRow = blublesPerRow*PhotonNetwork.CurrentRoom.PlayerCount;
             if(PhotonNetwork.CurrentRoom.PlayerCount > 1)
                 resultStartPosX -= 0.65f*PhotonNetwork.CurrentRoom.PlayerCount;
-            int perRow = blublesPerRow*PhotonNetwork.CurrentRoom.PlayerCount;
             float xSteps = (perRow+PhotonNetwork.CurrentRoom.PlayerCount)/perRow;
             float x = resultStartPosX - PhotonNetwork.CurrentRoom.PlayerCount*2 - xSteps;
             float ySteps = 2/(words.GetLength(0)/perRow);
@@ -411,7 +407,7 @@ public class GameController : MonoBehaviourPunCallbacks
             if(PhotonNetwork.IsMasterClient)
                 blubleRoutine = StartCoroutine(BlubleCreator(emergingBaseSpeed/PhotonNetwork.CurrentRoom.PlayerCount)); 
             gameSound.Play();
-            //Show bubbles again
+            //show bubbles again
             foreach (Transform child in transform){
                 if(child.gameObject.GetComponent<BlubleDraggable>() != null)
                     child.gameObject.SetActive(true);
@@ -423,7 +419,7 @@ public class GameController : MonoBehaviourPunCallbacks
             if(blubleRoutine != null)
                 StopCoroutine(blubleRoutine);
             gameSound.Stop();
-            //Hide all bubbles
+            //hide all bubbles
             foreach (Transform child in transform){
                 if(child.gameObject.GetComponent<BlubleDraggable>() != null)
                     child.gameObject.SetActive(false);
@@ -432,12 +428,12 @@ public class GameController : MonoBehaviourPunCallbacks
     }
 
     public void QuitGame(){
-        //Stop bubble generation & sound
+        //stop bubble generation & sound
         if(blubleRoutine != null)
             StopCoroutine(blubleRoutine);
         gameSound.Stop();  
 
-        //Remove all bubbles
+        //remove all bubbles
         if(PhotonNetwork.IsMasterClient){
             foreach (Transform child in transform){
                 if(child.gameObject.GetComponent<BlubleDraggable>() != null);

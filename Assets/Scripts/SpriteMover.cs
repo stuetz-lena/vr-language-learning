@@ -19,8 +19,7 @@ public class SpriteMover : MonoBehaviour
     float initialY;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         direction = true;
         counter = 0;
         initialX = this.transform.localPosition.x-(distance/2);
@@ -28,8 +27,7 @@ public class SpriteMover : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update(){
         if(vertical){
             //Check if direction change is necessary
             if(counter <= 0.09){ //0.0 was never reached, prevention of negative values

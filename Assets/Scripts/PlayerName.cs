@@ -9,12 +9,12 @@ public class PlayerName : MonoBehaviourPun, IPunObservable
     {
         if (photonView.IsMine)
         {
-            ChangeMyName("Player " + PhotonNetwork.LocalPlayer.ActorNumber);
+            ChangeMyName("Player " + PhotonNetwork.LocalPlayer.ActorNumber); //translated to English
         }
     }
 
     void Update(){
-        //rotate player name text to other player
+        //rotate player name to other player
         GameObject name = this.transform.Find("NameUI").gameObject;
         name.transform.rotation = Quaternion.Euler(name.transform.eulerAngles.x,Camera.main.transform.eulerAngles.y,name.transform.eulerAngles.z);
     }

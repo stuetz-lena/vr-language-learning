@@ -24,8 +24,7 @@ public class UfoMovement : MonoBehaviour
     float initialZ;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         ftime = 0.0f;
         ctime = 0.0f;
         initialY = this.transform.position.y; 
@@ -34,8 +33,7 @@ public class UfoMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update(){
         if(circleMovement && floating) { //Move up and down in a circle depending on the radius
             ctime += Time.deltaTime*cspeed;
             ftime += 0.02f;

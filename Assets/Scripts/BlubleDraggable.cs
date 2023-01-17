@@ -144,8 +144,7 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
         currentBlubble.hintUsed = true; //save usage for score calculation
         if(hint)
             hint.Play();
-        /*if(currentBlubble.GetComponentInChildren<Button>())
-            currentBlubble.GetComponentInChildren<Button>().interactable = false; //deactivate the button*/
+        
         currentBlubble.GetComponentInChildren<TextMeshPro>().text = GameController.Instance.GetTranslation(currentBlubble.GetComponentInChildren<TextMeshPro>().text);
         if(currentBlubble.GetComponentInChildren<Canvas>()) //hide button canvas to restrict hint usage to once
             currentBlubble.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
@@ -209,31 +208,31 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
             PhotonView photonView = this.GetComponent<PhotonView>();
 
             if((other.collider.CompareTag("Bucket_der") && myCollider.CompareTag("der")) || (other.collider.CompareTag("Bucket_die") && myCollider.CompareTag("die")) || (other.collider.CompareTag("Bucket_das") && myCollider.CompareTag("das"))){ //correct sorting
-                if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
+                if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
                     photonView.RPC("SortingOrExit", RpcTarget.All, 1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
                     SortingOrExit(1, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 } 
             } else if (other.collider.CompareTag("Bucket_der") || other.collider.CompareTag("Bucket_die")  || other.collider.CompareTag("Bucket_das")){ //if we hit any other bucket
-                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
                     photonView.RPC("SortingOrExit", RpcTarget.All, 2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
                     SortingOrExit(2, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
                 } 
             }
         
             if(other.collider.tag == "Floor_end") { //destroy bubbles if they hit the walls
-                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
                     photonView.RPC("SortingOrExit", RpcTarget.All, 0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text, other.collider.tag);
-                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
                     SortingOrExit(0, this.GetComponent<PhotonView>().ViewID, this.GetComponentInChildren<TextMeshPro>().text);
                 }  
             }
 
             if(other.collider.tag == "Player") { //stop bubble if it hits a player or is pushed on them
-                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){
+                 if(PhotonNetwork.CurrentRoom.PlayerCount > 1 && !PhotonNetwork.IsMasterClient){ //in this case we need to send the event to all others because the master does not recognize otherwise
                     photonView.RPC("TriggerStandStill", RpcTarget.All, this.GetComponent<PhotonView>().ViewID, true);
-                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){
+                } else if(PhotonNetwork.CurrentRoom.PlayerCount == 1){ //no RPC needed
                     TriggerStandStill(this.GetComponent<PhotonView>().ViewID, true);
                 }  
             }
@@ -316,7 +315,8 @@ public class BlubleDraggable : GrabbableBase<PointerEventData, BlubleDraggable.G
 
     IEnumerator DestroyBluble(float time, int viewID){ //MasterONLYfunction
         yield return new WaitForSeconds(time); //wait for audio clip end
-        if(!this.GetComponent<PhotonView>().IsMine)
+        if(!this.GetComponent<PhotonView>().IsMine) 
+            //change owner if necessary
             PhotonView.Find(viewID).TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
         if(this.GetComponent<PhotonView>().IsMine)
             PhotonNetwork.Destroy(PhotonView.Find(viewID).gameObject);

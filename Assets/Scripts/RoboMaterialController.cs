@@ -12,8 +12,7 @@ public class RoboMaterialController : MonoBehaviour
     Coroutine resetMaterial; //to handle sortings with short time differences, only one coroutine is allowed at a time
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         myRenderer = this.GetComponent<MeshRenderer>();
         orgMaterial = myRenderer.material;
     }

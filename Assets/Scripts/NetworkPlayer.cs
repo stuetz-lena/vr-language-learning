@@ -27,7 +27,7 @@ public class NetworkPlayer : MonoBehaviourPun
         //rightHandRig = rig.transform.Find("ViveCameraRig/RightHand");
         if (photonView.IsMine)
         {
-            ChangeMyName("Player " + PhotonNetwork.LocalPlayer.ActorNumber);
+            ChangeMyName("Player " + PhotonNetwork.LocalPlayer.ActorNumber); //translated to English
         }
 
         /*if (photonView.IsMine)

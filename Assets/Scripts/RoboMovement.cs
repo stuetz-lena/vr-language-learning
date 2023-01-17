@@ -58,8 +58,7 @@ public class RoboMovement : MonoBehaviour
     Transform head;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         ctime = 0.0f;
         ftime = 0.0f;
         hcounter = 0.0f;
@@ -79,8 +78,7 @@ public class RoboMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update(){
         if(armMovement){ //Arms moving from afrom to ato and reverse
             //Check if direction change is necessary at the borders 0 and 1 for Math Lerp interpolation
             if(acounter <= 0.09){ //0.0 was never reached, prevention of negative values
